@@ -1,7 +1,6 @@
 <?php
-namespace Messenger\Mail;
-use \Zend\Mail\Message as OriginalMessage;
-class Message extends OriginalMessage{
+namespace BoilerAppMessenger\Mail;
+class Message extends \Zend\Mail\Message{
 
 	/**
 	 * @var array
@@ -10,10 +9,11 @@ class Message extends OriginalMessage{
 
 	/**
 	 * @param string $sFilePath
-	 * @throws \Exception
+	 * @throws \InvalidArgumentException
+	 * @return \Messenger\Mail\Message
 	 */
 	public function addAttachment($sFilePath){
-		if(empty($sFilePath) || !file_exists($sFilePath))throw new \Exception('Attachment file not found : '.$sFilePath);
+		if(empty($sFilePath) || !file_exists($sFilePath))throw new \InvalidArgumentException('Attachment file "'.$sFilePath.'" does not exist');
 		$this->attachments[] = $sFilePath;
 		return $this;
 	}

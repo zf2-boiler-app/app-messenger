@@ -1,0 +1,36 @@
+{
+    "name": "zf2-boiler-app/app-messenger",
+    "license": "MIT",
+   	"type": "library",
+    "description": "ZF2 BoilerApp Messenger module",
+    "keywords": ["Zend Framework 2","ZF2 Boiler-App","Messenger","mail"],
+    "authors": [
+        {
+            "name": "Neilime",
+            "role": "Developer"
+        }
+    ],
+    "minimum-stability" : "dev",
+    "repositories":[        
+        {
+	        "type": "vcs",
+	        "url": "http://github.com/Nodge/lessphp"
+	    }
+    ],
+    "require": {
+        "php": ">=5.3.3",
+        "zendframework/zendframework": "dev-master",
+        "neilime/zf2-assets-bundle": "dev-master",
+        "inlinestyle/inlinestyle": "dev-master",
+        "zf2-boiler-app/app-user": "dev-master"
+    },
+    "require-dev":{
+    	"zf2-boiler-app/app-test": "dev-master"
+    },
+    "autoload": {
+        "psr-0": {
+            "BoilerAppMessenger": "src"
+        },
+        "classmap" : ["Module.php"]
+    }
+}

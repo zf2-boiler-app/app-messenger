@@ -1,7 +1,6 @@
 <?php
-namespace Messenger\Mail\Transport;
-use \Zend\Mail\Transport\Smtp as OriginalSmtp;
-class Smtp extends OriginalSmtp{
+namespace BoilerAppMessenger\Mail\Transport;
+trait AttachementsAwareTrait{
 
 	/**
 	 * @var array
@@ -10,10 +9,10 @@ class Smtp extends OriginalSmtp{
 
 	/**
 	 * Prepare message body
-	 * @param \Messenger\Mail\Message $oMessage
+	 * @param \BoilerAppMessenger\Mail\Message $oMessage
 	 * @return string
 	 */
-	protected function prepareMessage(\Messenger\Mail\Message $oMessage){
+	protected function prepareMessage(\BoilerAppMessenger\Mail\Message $oMessage){
 		if($oMessage->hasattachments())foreach($oMessage->getAttachments() as $sAttachmentPath){
 			$this->addAttachment($sAttachmentPath);
 		}
@@ -32,7 +31,7 @@ class Smtp extends OriginalSmtp{
 	 * @return string
 	 */
 	protected function processImageSrc(array $aMatches){
-		if(empty($aMatches[1]))throw new \Exception('Image "src" match is empty: '.print_r($aMatches));
+		if(empty($aMatches[1]))throw new \Inv('Image "src" match is empty: '.print_r($aMatches));
 		$oAttachment = $this->addAttachment(urldecode($aMatches[1]),\Zend\Mime\Mime::DISPOSITION_INLINE);
 		return 'src="cid:'.$oAttachment->id.'"';
 	}

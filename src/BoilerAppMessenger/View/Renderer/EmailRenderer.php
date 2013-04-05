@@ -1,3 +1,3 @@
 <?php
-namespace Messenger\View\Renderer;
+namespace BoilerAppMessenger\View\Renderer;
 class EmailRenderer extends \Zend\View\Renderer\PhpRenderer{}

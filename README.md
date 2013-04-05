@@ -1,4 +1,4 @@
-ZF2 BoilerApp Messenger module
+ZF2 BoilerApp "Messenger" module
 =====================
 
 Created by Neilime
@@ -9,7 +9,7 @@ If you want to contribute don't hesitate, I'll review any PR.
 Introduction
 ------------
 
-__BoilerApp Messenger module__ is a Zend Framework 2 module
+__ZF2 BoilerApp "Messenger" module__ is a Zend Framework 2 module
 
 Requirements
 ------------
@@ -35,7 +35,7 @@ Installation
     }
     ```
 
-2. Now tell composer to download __ZF2 BoilerApp Messenger module__ by running the command:
+2. Now tell composer to download __ZF2 BoilerApp "Messenger" module__ by running the command:
 
     ```bash
     $ php composer.phar update

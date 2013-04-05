@@ -1,7 +1,7 @@
 <?php
-namespace Messenger\Service;
+namespace BoilerAppMessenger\Service;
 class MessengerService implements \Zend\EventManager\SharedEventManagerAwareInterface, \Zend\I18n\Translator\TranslatorAwareInterface{
-	use \Zend\I18n\Translator\TranslatorAwareTrait;
+	//use \Zend\I18n\Translator\TranslatorAwareTrait;
 
 	const MEDIA_EMAIL = 'email';
 
@@ -16,9 +16,9 @@ class MessengerService implements \Zend\EventManager\SharedEventManagerAwareInte
 	private $assetsBundleService;
 
 	/**
-	 * @var \Messenger\Mail\InlineStyle\InlineStyleService
+	 * @var \BoilerAppMessenger\StyleInliner\StyleInlinerService
 	 */
-	private $inlineStyle;
+	private $styleInliner;
 
 	/**
 	 * @var \Zend\Mvc\Router\RouteStackInterface
@@ -68,11 +68,11 @@ class MessengerService implements \Zend\EventManager\SharedEventManagerAwareInte
 	 * @param \Zend\I18n\Translator\Translator $oTranslator
 	 * @param \Zend\Mvc\Router\RouteStackInterface $oRouter
 	 * @throws \InvalidArgumentException
-	 * @return \Messenger\Service\MessengerService
+	 * @return \BoilerAppMessenger\Service\MessengerService
 	 */
 	public static function factory($aConfiguration,
 		\AssetsBundle\Service\Service $oAssetsBundleService,
-		\Messenger\Mail\InlineStyle\InlineStyleService $oInlineStyle,
+		\BoilerAppMessenger\Mail\InlineStyle\InlineStyleService $oInlineStyle,
 		\Zend\I18n\Translator\Translator $oTranslator,
 		\Zend\Mvc\Router\RouteStackInterface $oRouter
 	){
@@ -87,13 +87,13 @@ class MessengerService implements \Zend\EventManager\SharedEventManagerAwareInte
 	}
 
 	/**
-	 * @param \Messenger\Message $oMessage
+	 * @param \BoilerAppMessenger\Message $oMessage
 	 * @param string|array $aMedias
 	 * @throws \InvalidArgumentException
 	 * @throws \DomainException
-	 * @return \Messenger\Service\MessengerService
+	 * @return \BoilerAppMessenger\Service\MessengerService
 	 */
-	public function sendMessage(\Messenger\Message $oMessage,$aMedias){
+	public function sendMessage(\BoilerAppMessenger\Message $oMessage,$aMedias){
 		if(empty($aMedias))throw new \InvalidArgumentException('A media must be specified');
 		elseif(is_string($aMedias))$aMedias = array($aMedias);
 		elseif(!is_array($aMedias))throw new \InvalidArgumentException('$aMedias expects an array or a string');
@@ -116,12 +116,12 @@ class MessengerService implements \Zend\EventManager\SharedEventManagerAwareInte
 					$oContentView = new \Zend\View\Model\ViewModel(array('content'=> $oMessage->getBodyText()));
 
 					//InlineStyle
-					$oInlineStyle = $this->getInlineStyle();
+					$oStyleInliner = $this->getStyleInliner();
 
 					$oRenderer->layout()->subject = $oMessage->getSubject();
 					$oRenderer->layout()->addChild($oHeaderView->setTemplate('email/header'), 'header')->addChild($oContentView->setTemplate('email/default'));
-					return $this->renderView($oRenderer->layout(),function($sHtml) use($oMessage,$oTransporter,$oInlineStyle){
-						$oTransporter->send($oMessage->setBody($oInlineStyle->processHtml($sHtml)));
+					return $this->renderView($oRenderer->layout(),function($sHtml) use($oMessage,$oTransporter,$oStyleInliner){
+						$oTransporter->send($oMessage->setBody($oStyleInliner->processHtml($sHtml)));
 					});
 					break;
 				default:
@@ -132,38 +132,38 @@ class MessengerService implements \Zend\EventManager\SharedEventManagerAwareInte
 	}
 
 	/**
-	 * @param \Messenger\Message $oMessage
+	 * @param \BoilerAppMessenger\Message $oMessage
 	 * @param string $sMedia
 	 * @throws \UnexpectedValueException
 	 * @throws \DomainException
-	 * @return \Messenger\Mail\Message
+	 * @return \BoilerAppMessenger\Mail\Message
 	 */
-	protected function formatMessageForMedia(\Messenger\Message $oMessage,$sMedia){
+	protected function formatMessageForMedia(\BoilerAppMessenger\Message $oMessage,$sMedia){
 		switch($sMedia){
 			case self::MEDIA_EMAIL:
-				$oFormatMessage = new \Messenger\Mail\Message();
+				$oFormatMessage = new \BoilerAppMessenger\Mail\Message();
 				$oFormatMessage->setEncoding('UTF-8');
 
 				//From Sender
 				$oFrom = $oMessage->getFrom();
-				if($oFrom === \Messenger\Message::SYSTEM_USER)$oFormatMessage->setFrom(
+				if($oFrom === \BoilerAppMessenger\Message::SYSTEM_USER)$oFormatMessage->setFrom(
 					$this->configuration['system_user']['email'],
 					$this->configuration['system_user']['name']
 				);
 				elseif($oFrom instanceof \User\Entity\UserEntity)$oFormatMessage->setFrom($oFrom->getUserAuthAccess()->getAuthAccessEmailIdentity());
 				else throw new \UnexpectedValueException(sprintf(
-					'From sender expects \Messenger\Message::SYSTEM_USER or \User\Entity\UserEntity, "%s" given',
+					'"From" sender expects \BoilerAppMessenger\Message::SYSTEM_USER or \BoilerAppUser\Entity\UserEntity, "%s" given',
 					is_scalar($oFrom)?$oFrom:(is_object($oFrom)?get_class($oFrom):gettype($oFrom))
 				));
 
 				//To Recipiants
 				foreach($oMessage->getTo() as $oTo){
-					if($oTo === \Messenger\Message::SYSTEM_USER)$oFormatMessage->addTo(
+					if($oTo === \BoilerAppMessenger\Message::SYSTEM_USER)$oFormatMessage->addTo(
 						$this->configuration['system_user']['email'],
 						$this->configuration['system_user']['name']
 					);
 					elseif($oTo instanceof \User\Entity\UserEntity)$oFormatMessage->addTo($oTo->getUserAuthAccess()->getAuthAccessEmailIdentity());
-					else throw new \UnexpectedValueException('To Recipiant expects \Messenger\Message::SYSTEM_USER or \User\Entity\UserEntity');
+					else throw new \UnexpectedValueException('"To" Recipiant expects \BoilerAppMessenger\Message::SYSTEM_USER or \BoilerAppUser\Entity\UserEntity');
 				}
 
 				//Subject
@@ -183,7 +183,7 @@ class MessengerService implements \Zend\EventManager\SharedEventManagerAwareInte
 	 * @param \Zend\View\Model\ViewModel $oView
 	 * @param \Closure $oCallback
 	 * @throws \BadFunctionCallException
-	 * @return \Messenger\Service\MediasService
+	 * @return \BoilerAppMessenger\Service\MessengerService
 	 */
 	public function renderView(\Zend\View\Model\ViewModel $oView,\Closure $oCallback){
 		if(!is_callable($oCallback))throw new \BadFunctionCallException('$oCallback is not a callable');
@@ -231,9 +231,10 @@ class MessengerService implements \Zend\EventManager\SharedEventManagerAwareInte
 				$this->renderers[$sMedia] = new \Zend\View\Renderer\PhpRenderer();
 				$this->renderers[$sMedia]->setResolver(new \Zend\View\Resolver\TemplateMapResolver($this->configuration['view_manager']['template_map']));
 				break;
+
 			//Renderer for email
 			case self::MEDIA_EMAIL:
-				$this->renderers[$sMedia] = new \Messenger\View\Renderer\EmailRenderer();
+				$this->renderers[$sMedia] = new \BoilerAppMessenger\View\Renderer\EmailRenderer();
 				$oLayout = new \Zend\View\Model\ViewModel();
 				$this->renderers[$sMedia]->setResolver(new \Zend\View\Resolver\TemplateMapResolver($this->configuration['view_manager']['template_map']))
 				->plugin('view_model')->setRoot($oLayout->setTemplate('email/layout'));
@@ -242,8 +243,9 @@ class MessengerService implements \Zend\EventManager\SharedEventManagerAwareInte
 				$oVueFooter = new \Zend\View\Model\ViewModel();
 				$this->renderers[$sMedia]->layout()->addChild($oVueFooter->setTemplate('email/footer'),'footer');
 				break;
+
 			default:
-				throw new \DomainException('Media "'.$sMedia.'" is not a valid media');
+				throw new \DomainException('Media "'.$sMedia.'" is not a defined media');
 		}
 		//Add mandatory helpers
 		$oTranslateHelper = new \Zend\I18n\View\Helper\Translate();
@@ -279,28 +281,28 @@ class MessengerService implements \Zend\EventManager\SharedEventManagerAwareInte
 	}
 
 	/**
-	 * @param \Messenger\Mail\InlineStyle\InlineStyleService
-	 * @return \Messenger\Service\MessengerService
+	 * @param \BoilerAppMessenger\StyleInliner\StyleInlinerService $oStyleInliner
+	 * @return \BoilerAppMessenger\Service\MessengerService
 	 */
-	public function setInlineStyle(\Messenger\Mail\InlineStyle\InlineStyleService $oInlineStyle){
-		$this->inlineStyle = $oInlineStyle;
+	public function setStyleInliner(\BoilerAppMessenger\StyleInliner\StyleInlinerService $oStyleInliner){
+		$this->styleInliner = $oStyleInliner;
 		return $this;
 	}
 
 	/**
 	 * @throws \LogicException
-	 * @return \Messenger\Mail\InlineStyle\InlineStyleService
+	 * @return \BoilerAppMessenger\StyleInliner\StyleInlinerService
 	 */
-	private function getInlineStyle(){
-		if($this->inlineStyle instanceof \Messenger\Mail\InlineStyle\InlineStyleService)return $this->inlineStyle;
-		throw new \LogicException('InlineStyle is undefined');
+	private function getStyleInliner(){
+		if($this->styleInliner instanceof \BoilerAppMessenger\StyleInliner\StyleInlinerService)return $this->styleInliner;
+		throw new \LogicException('StyleInliner is undefined');
 	}
 
 	/**
 	 * @param \Zend\Mail\Transport\TransportInterface $oTransporter
 	 * @param string $sMedia
 	 * @throws \Exception
-	 * @return \Messenger\Service\MessengerService
+	 * @return \BoilerAppMessenger\Service\MessengerService
 	 */
 	private function setTransporter(\Zend\Mail\Transport\TransportInterface $oTransporter,$sMedia){
 		if(empty($sMedia) || !is_string($sMedia))throw new \InvalidArgumentException(sprintf(
@@ -328,7 +330,7 @@ class MessengerService implements \Zend\EventManager\SharedEventManagerAwareInte
 
 	/**
 	 * @param \Zend\Mvc\Router\RouteStackInterface $oRouter
-	 * @return \Messenger\Service\MessengerService
+	 * @return \BoilerAppMessenger\Service\MessengerService
 	 */
 	public function setRouter(\Zend\Mvc\Router\RouteStackInterface $oRouter){
 		$this->router = $oRouter;
@@ -336,18 +338,18 @@ class MessengerService implements \Zend\EventManager\SharedEventManagerAwareInte
 	}
 
 	/**
-	 * @throws \Exception
+	 * @throws \LogicException
 	 * @return \Zend\Mvc\Router\RouteStackInterface
 	 */
 	private function getRouter(){
 		if($this->router instanceof \Zend\Mvc\Router\RouteStackInterface)return $this->router;
-		throw new \Exception('Router is undefined');
+		throw new \LogicException('Router is undefined');
 	}
 
 	/**
 	 * Inject a SharedEventManager instance
 	 * @param \Zend\EventManager\SharedEventManagerInterface $oSharedEventManager
-	 * @return \Messenger\Service\MessengerService
+	 * @return \BoilerAppMessenger\Service\MessengerService
 	 */
 	public function setSharedManager(\Zend\EventManager\SharedEventManagerInterface $oSharedEventManager){
 		$this->sharedEventManager = $oSharedEventManager;
@@ -366,7 +368,7 @@ class MessengerService implements \Zend\EventManager\SharedEventManagerAwareInte
 
 	/**
 	 * Remove any shared collections
-	 * @return \Messenger\Service\MessengerService
+	 * @return \BoilerAppMessenger\Service\MessengerService
 	 */
 	public function unsetSharedManager(){
 		$this->sharedEventManager = null;
