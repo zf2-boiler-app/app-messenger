@@ -11,12 +11,16 @@ class MessengerServiceFactory implements \Zend\ServiceManager\FactoryInterface{
         		elseif($oServiceLocator->has($oTransporter))$aConfiguration['messenger']['transporters'][$sMedia] = $oServiceLocator->get($oTransporter);
         	}
         }
-        return \BoilerAppMessenger\Service\MessengerService::factory(
-        	isset($aConfiguration['messenger'])?$aConfiguration['messenger']:array(),
-        	$oServiceLocator->get('AssetsBundleService'),
-        	$oServiceLocator->get('InlineStyleService'),
-        	$oServiceLocator->get('translator'),
-        	$oServiceLocator->get('router')
+
+        $oMessengerService = \BoilerAppMessenger\Service\MessengerService::factory(
+        	isset($aConfiguration['messenger'])?$aConfiguration['messenger']:array()
         );
+
+        if($oServiceLocator->has('AssetsBundleService'))$oMessengerService->setAssetsBundleService($oServiceLocator->get('AssetsBundleService'));
+        if($oServiceLocator->has('StyleInliner'))$oMessengerService->setStyleInliner($oServiceLocator->get('StyleInliner'));
+        if($oServiceLocator->has('translator'))$oMessengerService->setTranslator($oServiceLocator->get('translator'));
+        if($oServiceLocator->has('router'))$oMessengerService->setRouter($oServiceLocator->get('router'));
+        return $oMessengerService;
+
     }
 }

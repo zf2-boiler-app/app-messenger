@@ -1,7 +1,7 @@
 <?php
 namespace BoilerAppMessenger\Service;
 class MessengerService implements \Zend\EventManager\SharedEventManagerAwareInterface, \Zend\I18n\Translator\TranslatorAwareInterface{
-	//use \Zend\I18n\Translator\TranslatorAwareTrait;
+	use \Zend\I18n\Translator\TranslatorAwareTrait;
 
 	const MEDIA_EMAIL = 'email';
 
@@ -63,27 +63,12 @@ class MessengerService implements \Zend\EventManager\SharedEventManagerAwareInte
 	/**
 	 * Instantiate a messenger
 	 * @param array|Traversable $aConfiguration
-	 * @param \AssetsBundle\Service\Service $oAssetsBundleService
-	 * @param \Messenger\Mail\InlineStyle\InlineStyleService $oInlineStyle
-	 * @param \Zend\I18n\Translator\Translator $oTranslator
-	 * @param \Zend\Mvc\Router\RouteStackInterface $oRouter
-	 * @throws \InvalidArgumentException
 	 * @return \BoilerAppMessenger\Service\MessengerService
 	 */
-	public static function factory($aConfiguration,
-		\AssetsBundle\Service\Service $oAssetsBundleService,
-		\BoilerAppMessenger\Mail\InlineStyle\InlineStyleService $oInlineStyle,
-		\Zend\I18n\Translator\Translator $oTranslator,
-		\Zend\Mvc\Router\RouteStackInterface $oRouter
-	){
+	public static function factory($aConfiguration){
 		if($aConfiguration instanceof \Traversable)$aConfiguration = \Zend\Stdlib\ArrayUtils::iteratorToArray($aConfiguration);
 		elseif(!is_array($aConfiguration))throw new \InvalidArgumentException(__METHOD__.' expects an array or Traversable object; received "'.(is_object($aConfiguration)?get_class($aConfiguration):gettype($aConfiguration)).'"');
-		$oMessengerService = new static($aConfiguration);
-		return $oMessengerService
-		->setAssetsBundleService($oAssetsBundleService)
-		->setInlineStyle($oInlineStyle)
-		->setTranslator($oTranslator)
-		->setRouter($oRouter);
+		return new static($aConfiguration);
 	}
 
 	/**
@@ -96,7 +81,8 @@ class MessengerService implements \Zend\EventManager\SharedEventManagerAwareInte
 	public function sendMessage(\BoilerAppMessenger\Message $oMessage,$aMedias){
 		if(empty($aMedias))throw new \InvalidArgumentException('A media must be specified');
 		elseif(is_string($aMedias))$aMedias = array($aMedias);
-		elseif(!is_array($aMedias))throw new \InvalidArgumentException('$aMedias expects an array or a string');
+		elseif(!is_array($aMedias))throw new \InvalidArgumentException('$aMedias expects an array or a string, "'.gettype($aMedias).'" given');
+
 		foreach(array_unique($aMedias) as $sMedia){
 			switch($sMedia){
 				case self::MEDIA_EMAIL:
@@ -224,7 +210,8 @@ class MessengerService implements \Zend\EventManager\SharedEventManagerAwareInte
 	private function getRenderer($sMedia){
 		if(isset($this->renderers[$sMedia]) && $this->renderers[$sMedia] instanceof \Zend\View\Renderer\RendererInterface)return $this->renderers[$sMedia];
 		if(!isset($this->configuration['view_manager']['template_map'])
-		|| !is_array($this->configuration['view_manager']['template_map']))throw new \LogicException('Messenger Service configuration is not valid : '.print_r($this->configuration['view_manager'],true));
+		|| !is_array($this->configuration['view_manager']['template_map']))throw new \LogicException('"view_manager" configuration is not valid : '.print_r($this->configuration['view_manager'],true));
+
 		switch($sMedia){
 			//Renderer for single view
 			case 'default':
@@ -247,6 +234,7 @@ class MessengerService implements \Zend\EventManager\SharedEventManagerAwareInte
 			default:
 				throw new \DomainException('Media "'.$sMedia.'" is not a defined media');
 		}
+
 		//Add mandatory helpers
 		$oTranslateHelper = new \Zend\I18n\View\Helper\Translate();
 		$this->renderers[$sMedia]->getHelperPluginManager()->setService(
@@ -264,7 +252,7 @@ class MessengerService implements \Zend\EventManager\SharedEventManagerAwareInte
 
 	/**
 	 * @param \AssetsBundle\Service\Service
-	 * @return \Messenger\Service\MessengerService
+	 * @return \BoilerAppMessenger\Service\MessengerService
 	 */
 	public function setAssetsBundleService(\AssetsBundle\Service\Service $oAssetsBundleService){
 		$this->assetsBundleService = $oAssetsBundleService;

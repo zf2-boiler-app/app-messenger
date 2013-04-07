@@ -12,16 +12,19 @@ class MessengerServiceTest extends \BoilerAppTest\PHPUnit\TestCase\AbstractTestC
 	protected function setUp(){
 		parent::setUp();
 		$oMessengerServiceFactory = new \BoilerAppMessenger\Factory\MessengerServiceFactory();
+
+		//Set fake request uri
+		$_SERVER['HTTP_HOST'] = 'boiler-app-messenger-test.com';
 		$this->messengerService = $oMessengerServiceFactory->createService($this->getServiceManager());
 	}
 
 	public function testSendMessage(){
 		$oMessage = new \BoilerAppMessenger\Message();
-		$this->assertInstanceOf('\BoilerAppMessenger\Service\MessengerService',$this->messengerService->sendMessage(
-			$oMessage->setTo(\BoilerAppMessenger\Message::SYSTEM_USER),
-			$oMessage->setFrom(\BoilerAppMessenger\Message::SYSTEM_USER),
-			$oMessage->setSubject('test subject'),
-			$oMessage->setBody('test body'),
+		$this->assertInstanceOf('\BoilerAppMessenger\Service\MessengerService',$this->messengerService->sendMessage($oMessage
+			->setTo(\BoilerAppMessenger\Message::SYSTEM_USER)
+			->setFrom(\BoilerAppMessenger\Message::SYSTEM_USER)
+			->setSubject('test subject')
+			->setBody('test body'),
 			array(\BoilerAppMessenger\Service\MessengerService::MEDIA_EMAIL)
 		));
 	}

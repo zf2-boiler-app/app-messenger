@@ -10,7 +10,7 @@ return array(
 			'doctype' => 'HTML5'
 		),
 		'transporters' => array(
-			\Messenger\Service\MessengerService::MEDIA_EMAIL => 'EmailTransporter'
+			\BoilerAppMessenger\Service\MessengerService::MEDIA_EMAIL => 'EmailTransporter'
 		)
 	),
 	'style_inliner' => array(
