@@ -20,7 +20,10 @@ class MessengerServiceFactory implements \Zend\ServiceManager\FactoryInterface{
         if($oServiceLocator->has('StyleInliner'))$oMessengerService->setStyleInliner($oServiceLocator->get('StyleInliner'));
         if($oServiceLocator->has('translator'))$oMessengerService->setTranslator($oServiceLocator->get('translator'));
         if($oServiceLocator->has('router'))$oMessengerService->setRouter($oServiceLocator->get('router'));
-        return $oMessengerService;
 
+        //Define Templating service
+        $oMessengerService->setTemplatingService(\TreeLayoutStack\TemplatingService::factory(isset($aConfiguration['messenger']['templating'])?$aConfiguration['messenger']['templating']:array()));
+
+        return $oMessengerService;
     }
 }

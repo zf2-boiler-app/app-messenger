@@ -21,6 +21,7 @@
         "php": ">=5.3.3",
         "zendframework/zendframework": "dev-master",
         "neilime/zf2-assets-bundle": "dev-master",
+        "neilime/zf2-tree-layout-stack": "dev-master",
         "inlinestyle/inlinestyle": "dev-master",
         "zf2-boiler-app/app-user": "dev-master"
     },

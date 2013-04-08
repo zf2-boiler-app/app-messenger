@@ -7,10 +7,20 @@ return array(
 			'name' => ''
 		),
 		'view_manager' => array(
-			'doctype' => 'HTML5'
+			'doctype' => 'HTML5',
+			'template_map' => array(
+				'email/layout' => __DIR__ . '/../view/email/layout.phtml'
+			)
 		),
 		'transporters' => array(
 			\BoilerAppMessenger\Service\MessengerService::MEDIA_EMAIL => 'EmailTransporter'
+		),
+		'templating' => array(
+			'template_map' => array(
+				'default' => array(
+					'template' => 'email/layout'
+				)
+			)
 		)
 	),
 	'style_inliner' => array(

@@ -16,6 +16,11 @@ class MessengerService implements \Zend\EventManager\SharedEventManagerAwareInte
 	private $assetsBundleService;
 
 	/**
+	 * @var \TreeLayoutStack\TemplatingService
+	 */
+	private $templatingService;
+
+	/**
 	 * @var \BoilerAppMessenger\StyleInliner\StyleInlinerService
 	 */
 	private $styleInliner;
@@ -95,17 +100,11 @@ class MessengerService implements \Zend\EventManager\SharedEventManagerAwareInte
 					//Retrieve le renderer
 					$oRenderer = $this->getRenderer(self::MEDIA_EMAIL);
 
-					//Header view
-					$oHeaderView = new \Zend\View\Model\ViewModel(array('subject' => $oMessage->getSubject()));
-
-					//Content view
-					$oContentView = new \Zend\View\Model\ViewModel(array('content'=> $oMessage->getBodyText()));
-
 					//InlineStyle
 					$oStyleInliner = $this->getStyleInliner();
 
 					$oRenderer->layout()->subject = $oMessage->getSubject();
-					$oRenderer->layout()->addChild($oHeaderView->setTemplate('email/header'), 'header')->addChild($oContentView->setTemplate('email/default'));
+					$oRenderer->layout()->content = $oMessage->getBodyText();
 					return $this->renderView($oRenderer->layout(),function($sHtml) use($oMessage,$oTransporter,$oStyleInliner){
 						$oTransporter->send($oMessage->setBody($oStyleInliner->processHtml($sHtml)));
 					});
@@ -167,11 +166,11 @@ class MessengerService implements \Zend\EventManager\SharedEventManagerAwareInte
 	/**
 	 * Render single view
 	 * @param \Zend\View\Model\ViewModel $oView
-	 * @param \Closure $oCallback
+	 * @param $oCallback : callback function
 	 * @throws \BadFunctionCallException
 	 * @return \BoilerAppMessenger\Service\MessengerService
 	 */
-	public function renderView(\Zend\View\Model\ViewModel $oView,\Closure $oCallback){
+	public function renderView(\Zend\View\Model\ViewModel $oView,$oCallback){
 		if(!is_callable($oCallback))throw new \BadFunctionCallException('$oCallback is not a callable');
 
 		$oRenderer = $this->getRenderer('default');
@@ -194,7 +193,7 @@ class MessengerService implements \Zend\EventManager\SharedEventManagerAwareInte
 
 		//Process after rendering
 		$oMessageView->getEventManager()->attach(\Zend\View\ViewEvent::EVENT_RESPONSE,function(\Zend\View\ViewEvent $oEvent) use($oCallback){
-			$oCallback($oEvent->getResult());
+			call_user_func($oCallback,$oEvent->getResult());
 		});
 		$oMessageView->render($oRenderer->layout());
 		return $this;
@@ -203,15 +202,11 @@ class MessengerService implements \Zend\EventManager\SharedEventManagerAwareInte
 	/**
 	 * Retrieve media renderer
 	 * @param string $sMedia
-	 * @throws \LogicException
 	 * @throws \DomainException
 	 * @return \Zend\View\Renderer\RendererInterface
 	 */
 	private function getRenderer($sMedia){
 		if(isset($this->renderers[$sMedia]) && $this->renderers[$sMedia] instanceof \Zend\View\Renderer\RendererInterface)return $this->renderers[$sMedia];
-		if(!isset($this->configuration['view_manager']['template_map'])
-		|| !is_array($this->configuration['view_manager']['template_map']))throw new \LogicException('"view_manager" configuration is not valid : '.print_r($this->configuration['view_manager'],true));
-
 		switch($sMedia){
 			//Renderer for single view
 			case 'default':
@@ -222,13 +217,20 @@ class MessengerService implements \Zend\EventManager\SharedEventManagerAwareInte
 			//Renderer for email
 			case self::MEDIA_EMAIL:
 				$this->renderers[$sMedia] = new \BoilerAppMessenger\View\Renderer\EmailRenderer();
-				$oLayout = new \Zend\View\Model\ViewModel();
-				$this->renderers[$sMedia]->setResolver(new \Zend\View\Resolver\TemplateMapResolver($this->configuration['view_manager']['template_map']))
-				->plugin('view_model')->setRoot($oLayout->setTemplate('email/layout'));
 
-				//Footer view
-				$oVueFooter = new \Zend\View\Model\ViewModel();
-				$this->renderers[$sMedia]->layout()->addChild($oVueFooter->setTemplate('email/footer'),'footer');
+				//Create layout template
+				$oLayout = new \Zend\View\Model\ViewModel();
+				$oEvent = new \Zend\Mvc\MvcEvent(\Zend\Mvc\MvcEvent::EVENT_RENDER);
+				$this->getTemplatingService()->buildLayoutTemplate($oEvent
+					->setRequest(new \Zend\Http\Request())
+					->setViewModel($oLayout)
+				);
+
+
+				$this->renderers[$sMedia]->setResolver(
+					new \Zend\View\Resolver\TemplateMapResolver(empty($this->configuration['view_manager']['template_map'])?null:$this->configuration['view_manager']['template_map']))
+					->plugin('view_model')->setRoot($oEvent->getViewModel()
+				);
 				break;
 
 			default:
@@ -266,6 +268,24 @@ class MessengerService implements \Zend\EventManager\SharedEventManagerAwareInte
 	private function getAssetsBundleService(){
 		if($this->assetsBundleService instanceof \AssetsBundle\Service\Service)return $this->assetsBundleService;
 		throw new \LogicException('AssetsBundle Service is undefined');
+	}
+
+	/**
+	 * @param \TreeLayoutStack\TemplatingService $oTemplatingService
+	 * @return \BoilerAppMessenger\Service\MessengerService
+	 */
+	public function setTemplatingService(\TreeLayoutStack\TemplatingService $oTemplatingService){
+		$this->templatingService = $oTemplatingService;
+		return $this;
+	}
+
+	/**
+	 * @throws \LogicException
+	 * @return \TreeLayoutStack\TemplatingService
+	 */
+	private function getTemplatingService(){
+		if($this->templatingService instanceof \TreeLayoutStack\TemplatingService)return $this->templatingService;
+		throw new \LogicException('Templating Service is undefined');
 	}
 
 	/**

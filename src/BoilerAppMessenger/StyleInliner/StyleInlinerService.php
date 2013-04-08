@@ -41,7 +41,7 @@ class StyleInlinerService{
 	 * @return string
 	 */
 	public function processHtml($sHtml){
-		if(is_string($sHtml))return $this->getOptions()->getProcessor()->process($shtml);
+		if(is_string($sHtml))return $this->getOptions()->getProcessor()->process($sHtml);
 		throw new \InvalidArgumentException('Html expects string, "'.gettype($sHtml).'" given');
 
 	}

@@ -30,7 +30,7 @@ class InlineStyleProcessor implements \BoilerAppMessenger\StyleInliner\Processor
 		if($this->inlineStyle instanceof \InlineStyle\InlineStyle)$this->inlineStyle->loadHTML($sHtml);
 		elseif(class_exists('\InlineStyle\InlineStyle'))$this->inlineStyle = new \InlineStyle\InlineStyle($sHtml);
 		else throw new \LogicException('\InlineStyle\InlineStyle class is undefined');
-		return $this->inlineStyle->applyStylesheet($this->inlineStyle->extractStylesheets(null,$this->options->getServerUrl()));
+		return $this->inlineStyle->applyStylesheet($this->inlineStyle->extractStylesheets(null,$this->getServerUrl()));
 	}
 
 	/**

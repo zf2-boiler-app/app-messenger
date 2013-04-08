@@ -30,11 +30,15 @@ class MessengerServiceTest extends \BoilerAppTest\PHPUnit\TestCase\AbstractTestC
 	}
 
 	public function testRenderView(){
-		$this->assertInstanceOf('\BoilerAppMessenger\Service\MessengerService',$this->messengerService->renderView($oView, array($this,'renderViewCallback')));
+		$oView = new \Zend\View\Model\ViewModel();
+		$this->assertInstanceOf('\BoilerAppMessenger\Service\MessengerService',$this->messengerService->renderView(
+			$oView->setTemplate('email/simple-view'),
+			array($this,'renderViewCallback')
+		));
 	}
 
 	public function renderViewCallback($sHtml){
-		$this->assertEquals('', $sHtml);
+		$this->assertEquals(file_get_contents(getcwd().'/_files/expected/simple-view.phtml'), $sHtml);
 	}
 
 	public function getSharedManager(){
