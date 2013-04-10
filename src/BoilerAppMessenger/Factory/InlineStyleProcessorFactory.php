@@ -8,8 +8,16 @@ class InlineStyleProcessorFactory implements \Zend\ServiceManager\FactoryInterfa
 	 * @return \BoilerAppMessenger\StyleInliner\Processor\InlineStyleProcessor
 	 */
 	public function createService(\Zend\ServiceManager\ServiceLocatorInterface $oServiceLocator){
-		$oInlineStyleProcessor = new \BoilerAppMessenger\StyleInliner\Processor\InlineStyleProcessor();
-		if($sServerUrl = $oServiceLocator->get('ViewHelperManager')->get('ServerUrl')->__invoke())$oInlineStyleProcessor->setServerUrl($sServerUrl);
-		return $oInlineStyleProcessor;
+		$aOptions = array();
+
+		//Retrieve base dir
+		if(
+			$oServiceLocator->has('ViewHelperManager')
+			&& ($oViewHelperManager = $oServiceLocator->get('ViewHelperManager')) instanceof \Zend\View\HelperPluginManager
+			&& $oViewHelperManager->has('ServerUrl')
+			&& ($oServerUrl = $oViewHelperManager->get('ServerUrl')) instanceof \Zend\View\Helper\ServerUrl
+			&& $sServerUrl = $oServerUrl()
+		)$aOptions['baseDir'] = $sServerUrl;
+		return \BoilerAppMessenger\StyleInliner\Processor\InlineStyleProcessor::factory($aOptions);
 	}
 }

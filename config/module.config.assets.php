@@ -1,7 +1,7 @@
 <?php
 return array(
 	'assets' => array(
-		'email' => array(
+		'BoilerAppMessenger' => array(
 			'less' => array(__DIR__ . '/../assets/less/reset.less')
 		)
 	)

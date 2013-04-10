@@ -2,21 +2,16 @@
 return array(
 	'asset_bundle' => include 'module.config.assets.php',
 	'messenger' => array(
-		'system_user' => array(
-			'email' => '',
-			'name' => ''
-		),
 		'view_manager' => array(
-			'doctype' => 'HTML5',
 			'template_map' => array(
 				'email/layout' => __DIR__ . '/../view/email/layout.phtml'
 			)
 		),
 		'transporters' => array(
-			\BoilerAppMessenger\Service\MessengerService::MEDIA_EMAIL => 'EmailTransporter'
+			\BoilerAppMessenger\Service\MessengerService::MEDIA_EMAIL => 'SendmailTransport'
 		),
-		'templating' => array(
-			'template_map' => array(
+		'tree_layout_stack' => array(
+			'layout_tree' => array(
 				'default' => array(
 					'template' => 'email/layout'
 				)
@@ -29,7 +24,7 @@ return array(
 	'service_manager' => array(
 		'factories' => array(
 			'MessengerService' => 'BoilerAppMessenger\Factory\MessengerServiceFactory',
-			'EmailTransporter' => 'BoilerAppMessenger\Factory\EmailTransporterFactory',
+			'SendmailTransport' => 'BoilerAppMessenger\Factory\Transport\SendmailFactory',
 			'StyleInliner' => 'BoilerAppMessenger\Factory\StyleInlinerFactory',
 			'InlineStyleProcessor' => 'BoilerAppMessenger\Factory\InlineStyleProcessorFactory'
 		)

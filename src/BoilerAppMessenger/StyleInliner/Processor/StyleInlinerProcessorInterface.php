@@ -9,12 +9,12 @@ interface StyleInlinerProcessorInterface{
 	public function process($sHtml);
 
 	/**
-	 * @param string $sServerUrl
+	 * @param string $sBaseDir
 	 */
-	public function setServerUrl($sServerUrl);
+	public function setbaseDir($sBaseDir);
 
 	/**
 	 * @return string
 	 */
-	public function getServerUrl();
+	public function getBaseDir();
 }

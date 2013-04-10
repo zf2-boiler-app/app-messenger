@@ -1,0 +1,18 @@
+From: =?UTF-8?Q?Test=20"From"=20User?= <test-from-user@test.com>
+To: =?UTF-8?Q?Test=20System?= <test-system@test.com>
+Subject: =?UTF-8?Q?test=20subject?=
+MIME-Version: 1.0
+Content-Type: text/html
+Content-Transfer-Encoding: =?UTF-8?Q?8bit?=
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>test subject</title>
+</head>
+<body style="width:100% !important;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;margin:0;padding:0">
+	<p style="margin:1em 0">test body</p>
+</body>
+</html>

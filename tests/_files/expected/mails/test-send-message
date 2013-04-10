@@ -1,0 +1,23 @@
+From: =?UTF-8?Q?Test=20System?= <test-system@test.com>
+To: =?UTF-8?Q?Test=20"From"=20User?= <test-from-user@test.com>
+Subject: =?UTF-8?Q?test=20subject?=
+MIME-Version: 1.0
+Content-Type: multipart/mixed;
+ boundary="=_boundary"
+
+This is a message in Mime Format.  If you see this, your mail reader does not support this format.
+
+--=_boundary
+Content-Type: text/html
+Content-Transfer-Encoding: 8bit
+
+test body
+--=_boundary
+Content-Type: text/plain
+Content-Transfer-Encoding: base64
+content-id
+Content-Disposition: attachment; filename="attachment-test"
+Content-Description: attachment-test
+
+VGhpcyBpcyBhbiBhdHRhY2htZW50
+--=_boundary--
