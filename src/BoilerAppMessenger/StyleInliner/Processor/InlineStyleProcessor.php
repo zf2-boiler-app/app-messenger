@@ -9,13 +9,19 @@ class InlineStyleProcessor extends \BoilerAppMessenger\StyleInliner\Processor\Ab
 
 	/**
 	 * @param string $sHtml
+	 * @throws \RuntimeException
 	 * @throws \InvalidArgumentException
 	 */
 	public function process($sHtml){
 		if(is_string($sHtml)){
 			$oInlineStyle = $this->getInlineStyle();
-			$oInlineStyle->loadHTML($sHtml);
-			return $oInlineStyle->applyStylesheet($oInlineStyle->extractStylesheets(null,$this->getBaseDir()))->getHTML();
+			try{
+				$oInlineStyle->loadHTML($sHtml);
+				return $oInlineStyle->applyStylesheet($oInlineStyle->extractStylesheets(null,$this->getBaseDir()))->getHTML();
+			}
+			catch(\Exception $oException){
+				throw new \RuntimeException('Error appends during process', $oException->getCode(), $oException);
+			}
 		}
 		throw new \InvalidArgumentException('Html expects string, "'.gettype($sHtml).'" given');
 	}
