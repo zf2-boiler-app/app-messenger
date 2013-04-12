@@ -20,16 +20,26 @@ return array(
 		),
 		'transporters' => array(
 			\BoilerAppMessenger\Service\MessengerService::MEDIA_EMAIL => function(){
-				return new \BoilerAppMessenger\Mail\Transport\File(new \Zend\Mail\Transport\FileOptions(array(
+				$oFileTransport = new \BoilerAppMessenger\Mail\Transport\File(new \Zend\Mail\Transport\FileOptions(array(
 					'path' => __DIR__ . '/_files/mails'
 				)));
-			}
+				return $oFileTransport->setBaseDir(getcwd());
+			},
+			'test' => 'TestTransporter',
+			'test1' => array(
+				'type' => 'TestTransporter'
+			)
 		)
 	),
 	'service_manager' => array(
 		'factories' => array(
 			'InlineStyleProcessor' => function(){
 				return \BoilerAppMessenger\StyleInliner\Processor\InlineStyleProcessor::factory(array('baseDir' => getcwd().DIRECTORY_SEPARATOR.'_files'));
+			},
+			'TestTransporter' => function(){
+				return new \BoilerAppMessenger\Mail\Transport\File(new \Zend\Mail\Transport\FileOptions(array(
+					'path' => __DIR__ . '/_files/mails'
+				)));
 			}
 		)
 	)

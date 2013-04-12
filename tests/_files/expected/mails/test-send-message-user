@@ -2,8 +2,14 @@ From: =?UTF-8?Q?Test=20"From"=20User?= <test-from-user@test.com>
 To: =?UTF-8?Q?Test=20"To"=20User?= <test-user@test.com>
 Subject: =?UTF-8?Q?test=20subject?=
 MIME-Version: 1.0
+Content-Type: multipart/mixed;
+ boundary="=_boundary"
+
+This is a message in Mime Format.  If you see this, your mail reader does not support this format.
+
+--=_boundary
 Content-Type: text/html
-Content-Transfer-Encoding: =?UTF-8?Q?8bit?=
+Content-Transfer-Encoding: 8bit
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -13,6 +19,66 @@ Content-Transfer-Encoding: =?UTF-8?Q?8bit?=
 <title>test subject</title>
 </head>
 <body style="width:100% !important;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;margin:0;padding:0">
-	<p style="margin:1em 0">test body</p>
+	test body <img image-id style="outline:none;text-decoration:none;-ms-interpolation-mode:bicubic;margin:1%">
 </body>
 </html>
+
+--=_boundary
+Content-Type: image/gif
+Content-Transfer-Encoding: base64
+content-id
+Content-Disposition: inline; filename="test"
+Content-Description: test
+
+R0lGODdhXgGWAOMAAMzMzJaWlre3t6Ojo5ycnKqqqr6+vsXFxbGxsQAAAAAAAAAAAAAAAAAA
+AAAAAAAAACwAAAAAXgGWAAAE/hDISau9OOvNu/9gKI5kaZ5oqq5s675wLM90bd94ru987//A
+oHBILBqPyKRyyWw6n9CodEqtWq/YrHbL7Xq/4LB4TC6bz+i0es1uu9/wuHxOr9vv+Lx+z+/7
+/4CBgoOEhYaHiImKi4yNjo+QkZKTlJWWl5iZmpucnZ6foKGio6SlpqeoqaqrrK2ur7CxsrO0
+tba3uLm6u7y9vr/AwcLDxMXGx8jJysvMzc7P0NHS09TV1tfY2drb3N3e3+BSAgMEAQQFBhkB
+6+zt7BoHBeUBAwJCBe8X7vvr8PLr9cIBODDPHQIM/PZlEMBvwA8DBQMgTNhuYUNwBCketECx
+4gUD/hQL9ECgUF/Hfh9DfotIYIC7dBXaDShAsyZNDBHJtbOXAyK/iQBt2sQpMyLPbQzZ8cwI
+kKPSDyTZwXS5jkCOqD9NrjvKAWuAqeyscqMaYKMErwdiPvVQUKQEkFJvJGVHVqLWAFw3tJ0A
+dx1MbfHMVTjQ7q+EnR4Ix52w98Y8BAfm2nW6NXFhCo25HTB8eO0ExB3mip2A1eENAwXSApAM
+FK8H0RVKC5yg2K/ayh3wNaXAWm87s15Hf+hN2XVuuhWIC0R7u+y/c5wnkHXLt51qde1GR5w8
+3GNxBM/RYZheoW+A6xgzf+5oFjO79gMva9iXtnY+EMopnIQvoSB8+9Fp/lNTduh11lFeAPg3
+GGgZgPcbAF4VwB8H+a13oAUKUmAfgtrsQ0CBBtJV13nNIcigBlhZlaEIFYYI0IgFnhgih9ns
+MwCIAJB141sP6ueZhcZxUBBsJLSYI12qmQefjAAw2aGHOK4Gn26C+YiblUFuINmPIRgpgQBT
+hlVicTRu49NuHZiHHpNOEpWdCV5ioCaWJnL5jXkBXgCge+v81+YFW5YZmneWLdbfewva+Q15
+Hpy4ogR7fuDOCXG2xtWj8Rm6nJiN/shodexECag7glJIaKdXHrkOdTyGOtuXp873I5WmTVBp
+BdsJx2KsHJxIa3K8WnMAArpCyCltBdRKm3yw/lYV27FdhYVokcHGoyykzK4GrbHOIsXlr6Rx
+Oeeymqrnm1/b4scrVnmNi2257LCKDZGMTdtsleF2y2cA1OHpgWxkTTjofbxtmyKG8YJq2zb2
+1cocljsCoKQFXoGl7wYbauvqrgRDnGSPFFQsAVnFYkOlOTol/KxMMF6Qk1G5kVxvUAJbUFNd
+Na0sojs4vvynNSMSeEHQbZrnzrXY2esVSr12ZAHRikpMEdKAER3x0AkJuiWaTW+cabDFZVUB
+1FpfJBBq5bRUqsTPEQAZB/HME9AHBV1bV8l3iV1e229j/A89a78q+OCEF2744YgnrvjijDfu
++OOQRy755JRXbvnlTphnrvnmnHfu+eeghy766KSXbvrpqKeu+uqst+7667DHLvvstNdu++24
+56777rz37vvvwAcv/PDEF2/88cgnr/zyzDfv/PPQRy/99HNEAAA7
+--=_boundary
+Content-Type: image/gif
+Content-Transfer-Encoding: base64
+content-id
+Content-Disposition: inline; filename="test"
+Content-Description: test
+
+R0lGODdhXgGWAOMAAMzMzJaWlre3t6Ojo5ycnKqqqr6+vsXFxbGxsQAAAAAAAAAAAAAAAAAA
+AAAAAAAAACwAAAAAXgGWAAAE/hDISau9OOvNu/9gKI5kaZ5oqq5s675wLM90bd94ru987//A
+oHBILBqPyKRyyWw6n9CodEqtWq/YrHbL7Xq/4LB4TC6bz+i0es1uu9/wuHxOr9vv+Lx+z+/7
+/4CBgoOEhYaHiImKi4yNjo+QkZKTlJWWl5iZmpucnZ6foKGio6SlpqeoqaqrrK2ur7CxsrO0
+tba3uLm6u7y9vr/AwcLDxMXGx8jJysvMzc7P0NHS09TV1tfY2drb3N3e3+BSAgMEAQQFBhkB
+6+zt7BoHBeUBAwJCBe8X7vvr8PLr9cIBODDPHQIM/PZlEMBvwA8DBQMgTNhuYUNwBCketECx
+4gUD/hQL9ECgUF/Hfh9DfotIYIC7dBXaDShAsyZNDBHJtbOXAyK/iQBt2sQpMyLPbQzZ8cwI
+kKPSDyTZwXS5jkCOqD9NrjvKAWuAqeyscqMaYKMErwdiPvVQUKQEkFJvJGVHVqLWAFw3tJ0A
+dx1MbfHMVTjQ7q+EnR4Ix52w98Y8BAfm2nW6NXFhCo25HTB8eO0ExB3mip2A1eENAwXSApAM
+FK8H0RVKC5yg2K/ayh3wNaXAWm87s15Hf+hN2XVuuhWIC0R7u+y/c5wnkHXLt51qde1GR5w8
+3GNxBM/RYZheoW+A6xgzf+5oFjO79gMva9iXtnY+EMopnIQvoSB8+9Fp/lNTduh11lFeAPg3
+GGgZgPcbAF4VwB8H+a13oAUKUmAfgtrsQ0CBBtJV13nNIcigBlhZlaEIFYYI0IgFnhgih9ns
+MwCIAJB141sP6ueZhcZxUBBsJLSYI12qmQefjAAw2aGHOK4Gn26C+YiblUFuINmPIRgpgQBT
+hlVicTRu49NuHZiHHpNOEpWdCV5ioCaWJnL5jXkBXgCge+v81+YFW5YZmneWLdbfewva+Q15
+Hpy4ogR7fuDOCXG2xtWj8Rm6nJiN/shodexECag7glJIaKdXHrkOdTyGOtuXp873I5WmTVBp
+BdsJx2KsHJxIa3K8WnMAArpCyCltBdRKm3yw/lYV27FdhYVokcHGoyykzK4GrbHOIsXlr6Rx
+Oeeymqrnm1/b4scrVnmNi2257LCKDZGMTdtsleF2y2cA1OHpgWxkTTjofbxtmyKG8YJq2zb2
+1cocljsCoKQFXoGl7wYbauvqrgRDnGSPFFQsAVnFYkOlOTol/KxMMF6Qk1G5kVxvUAJbUFNd
+Na0sojs4vvynNSMSeEHQbZrnzrXY2esVSr12ZAHRikpMEdKAER3x0AkJuiWaTW+cabDFZVUB
+1FpfJBBq5bRUqsTPEQAZB/HME9AHBV1bV8l3iV1e229j/A89a78q+OCEF2744YgnrvjijDfu
++OOQRy755JRXbvnlTphnrvnmnHfu+eeghy766KSXbvrpqKeu+uqst+7667DHLvvstNdu++24
+56777rz37vvvwAcv/PDEF2/88cgnr/zyzDfv/PPQRy/99HNEAAA7
+--=_boundary--

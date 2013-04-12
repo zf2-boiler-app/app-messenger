@@ -19,10 +19,31 @@ class StyleInlinerServiceTest extends \BoilerAppTest\PHPUnit\TestCase\AbstractTe
 		$this->assertInstanceOf('BoilerAppMessenger\StyleInliner\StyleInlinerOptions',$this->styleInlinerService->getOptions());
 	}
 
+	/**
+	 * @expectedException LogicException
+	 */
+	public function testGetOptionsUnset(){
+		$oReflectionClass = new \ReflectionClass('\BoilerAppMessenger\StyleInliner\StyleInlinerService');
+		$oOptions = $oReflectionClass->getProperty('options');
+		$oOptions->setAccessible(true);
+		$oOptions->setValue($this->styleInlinerService, null);
+
+		$oGetOptions = $oReflectionClass->getMethod('getOptions');
+		$oGetOptions->setAccessible(true);
+		$oGetOptions->invokeArgs($this->styleInlinerService,array());
+	}
+
 	public function testProcessHtml(){
 		$this->assertEquals(
 			file_get_contents(getcwd().'/_files/expected/styleInliner/simple-test.html'),
 			$this->styleInlinerService->processHtml(file_get_contents(getcwd().'/_files/styleInliner/simple-test.html'))
 		);
+	}
+
+	/**
+	 * @expectedException InvalidArgumentException
+	 */
+	public function testProcessWithoutString(){
+		$this->styleInlinerService->processHtml(array());
 	}
 }

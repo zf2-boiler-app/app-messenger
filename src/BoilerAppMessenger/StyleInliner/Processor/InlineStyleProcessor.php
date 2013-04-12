@@ -31,8 +31,6 @@ class InlineStyleProcessor extends \BoilerAppMessenger\StyleInliner\Processor\Ab
 	 * @return \InlineStyle\InlineStyle
 	 */
 	private function getInlineStyle(){
-		if($this->inlineStyle instanceof \InlineStyle\InlineStyle)return $this->inlineStyle;
-		elseif(class_exists('\InlineStyle\InlineStyle'))return $this->inlineStyle = new \InlineStyle\InlineStyle();
-		else throw new \LogicException('\InlineStyle\InlineStyle class is undefined');
+		return $this->inlineStyle instanceof \InlineStyle\InlineStyle?$this->inlineStyle:$this->inlineStyle = new \InlineStyle\InlineStyle();
 	}
 }

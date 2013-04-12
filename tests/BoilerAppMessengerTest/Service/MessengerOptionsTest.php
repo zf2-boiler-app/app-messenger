@@ -31,4 +31,11 @@ class MessengerOptionsTest extends \BoilerAppTest\PHPUnit\TestCase\AbstractTestC
 	public function testHasTemplateMap(){
 		$this->assertTrue($this->messengerOptions->hasTemplateMap());
 	}
+
+	/**
+	 * @expectedException InvalidArgumentException
+	 */
+	public function testSetWrongSystemUserEmail(){
+		$this->messengerOptions->setSystemUser(array('email' => 'wrong','name' => 'test'));
+	}
 }

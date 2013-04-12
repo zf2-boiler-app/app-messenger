@@ -8,6 +8,15 @@ class SendmailFactory implements \Zend\ServiceManager\FactoryInterface{
 	 * @return \BoilerAppMessenger\Mail\Transport\Sendmail
 	 */
 	public function createService(\Zend\ServiceManager\ServiceLocatorInterface $oServiceLocator){
-    	return new \BoilerAppMessenger\Mail\Transport\Sendmail();
+		$oSendmailTransport = new \BoilerAppMessenger\Mail\Transport\Sendmail();
+		//Retrieve base dir
+		if(
+			$oServiceLocator->has('ViewHelperManager')
+			&& ($oViewHelperManager = $oServiceLocator->get('ViewHelperManager')) instanceof \Zend\View\HelperPluginManager
+			&& $oViewHelperManager->has('ServerUrl')
+			&& ($oServerUrl = $oViewHelperManager->get('ServerUrl')) instanceof \Zend\View\Helper\ServerUrl
+			&& $sServerUrl = $oServerUrl()
+		)$oSendmailTransport->setBaseDir($sServerUrl);
+    	return $oSendmailTransport;
     }
 }

@@ -17,7 +17,7 @@ class MessengerOptions extends \Zend\Stdlib\AbstractOptions{
 	 * @return \BoilerAppMessenger\Service\MessengerOptions
 	 */
 	public function setSystemUser(array $aSystemUser){
-		if(!isset($aSystemUser['email'],$aSystemUser['name']))throw new \InvalidArgumentException('system user expects "email" and "name" keys, "'.array_keys($aSystemUser).'" given');
+		if(!isset($aSystemUser['email'],$aSystemUser['name']))throw new \InvalidArgumentException('system user expects "email" and "name" keys, "'.join(', ',array_keys($aSystemUser)).'" given');
 		if(!($sEmail = filter_var($aSystemUser['email'],FILTER_VALIDATE_EMAIL)))throw new \InvalidArgumentException(sprintf(
 			'system user email expects valid email adress, "%s" given',
 			is_scalar($sEmail)?$sEmail:(is_object($sEmail)?get_class($sEmail):gettype($sEmail))

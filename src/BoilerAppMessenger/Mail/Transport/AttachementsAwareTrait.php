@@ -3,9 +3,40 @@ namespace BoilerAppMessenger\Mail\Transport;
 trait AttachementsAwareTrait{
 
 	/**
+	 * @var string
+	 */
+	protected $baseDir;
+
+	/**
 	 * @var array
 	 */
 	protected $attachments = array();
+
+	/**
+	 * @param string $sBaseDir
+	 * @throws \InvalidArgumentException
+	 * @return \BoilerAppMessenger\Mail\Transport\AttachementsAwareTrait
+	 */
+	public function setBaseDir($sBaseDir){
+		if(
+			(is_dir($sBaseDir) && ($sBaseDir = realpath($sBaseDir)))
+			|| ($sBaseDir = filter_var($sBaseDir,FILTER_VALIDATE_URL)) !== false
+		)$this->baseDir = $sBaseDir;
+		else throw new \InvalidArgumentException(sprintf(
+			'base dir expects valid directory or valid url, "%s" given',
+			is_scalar($sBaseDir)?$sBaseDir:(is_object($sBaseDir)?get_class($sBaseDir):gettype($sBaseDir))
+		));
+		return $this;
+	}
+
+	/**
+	 * @throws \LogicException
+	 * @return string
+	 */
+	public function getBaseDir(){
+		if(is_string($this->baseDir))return $this->baseDir;
+		throw new \LogicException('Base dir option is undefined');
+	}
 
 	/**
 	 * Prepare message body
@@ -16,7 +47,6 @@ trait AttachementsAwareTrait{
 		if($oMessage->hasattachments())foreach($oMessage->getAttachments() as $sAttachmentPath){
 			$this->addAttachment($sAttachmentPath);
 		}
-
 		$oBodyPart = new \Zend\Mime\Part(preg_replace_callback('/src="([^"]+)"/',array($this,'processImageSrc'),$oMessage->getBodyText()));
 		$oBodyPart->type = \Zend\Mime\Mime::TYPE_HTML;
 		$oBody = new \Zend\Mime\Message();
@@ -31,8 +61,11 @@ trait AttachementsAwareTrait{
 	 * @return string
 	 */
 	protected function processImageSrc(array $aMatches){
-		if(empty($aMatches[1]))throw new \Inv('Image "src" match is empty: '.print_r($aMatches));
-		$oAttachment = $this->addAttachment(urldecode($aMatches[1]),\Zend\Mime\Mime::DISPOSITION_INLINE);
+		if(empty($aMatches[1]))throw new \InvalidArgumentException('Image "src" match is empty: '.print_r($aMatches));
+
+		$sImgUrl = urldecode($aMatches[1]);
+		if(($sBaseDir = $this->getBaseDir()) && false === strpos($sImgUrl, '://'))$sImgUrl = $sBaseDir.'/'.current(explode('?',$sImgUrl));
+		$oAttachment = $this->addAttachment($sImgUrl,\Zend\Mime\Mime::DISPOSITION_INLINE);
 		return 'src="cid:'.$oAttachment->id.'"';
 	}
 
@@ -42,7 +75,7 @@ trait AttachementsAwareTrait{
 	 * @return \Zend\Mime\Part
 	 */
 	protected function addAttachment($sFilePath,$sDisposition = \Zend\Mime\Mime::DISPOSITION_ATTACHMENT){
-		if(!file_exists($sFilePath) || ($sFileContent = file_get_contents($sFilePath)) === false)throw new \Exception('Attachment file not found : '.$sFilePath);
+		if(!is_readable($sFilePath) || ($sFileContent = file_get_contents($sFilePath)) === false)throw new \InvalidArgumentException('Attachment file not found : '.$sFilePath);
 
 		$oAttachment = new \Zend\Mime\Part($sFileContent);
 		$oFInfo = new \finfo(FILEINFO_MIME_TYPE);

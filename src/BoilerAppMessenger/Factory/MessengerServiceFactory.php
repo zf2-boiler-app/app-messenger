@@ -28,7 +28,7 @@ class MessengerServiceFactory implements \Zend\ServiceManager\FactoryInterface{
         		else throw new \LogicException('Transporter "'.$oTransporter.'" is not an existing service or class');
         	}
         	elseif(is_array($oTransporter)){
-				if(!isset($oTransporter['type']))throw new \LogicException('Transporter config expects "type" key, "'.array_keys($oTransporter).'" given');
+				if(!isset($oTransporter['type']))throw new \LogicException('Transporter config expects "type" key, "'.join(', ',array_keys($oTransporter)).'" given');
 
 				$sTransporterType = $oTransporter['type'];
 				unset($oTransporter['type']);

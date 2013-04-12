@@ -44,7 +44,6 @@ class FileTest extends \BoilerAppTest\PHPUnit\TestCase\AbstractTestCase{
 	}
 
 	public function testSend(){
-
 		//Send message
 		$this->fileTransport->send($this->message);
 

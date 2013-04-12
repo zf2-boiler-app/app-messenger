@@ -88,7 +88,7 @@ class MessengerService implements \Zend\I18n\Translator\TranslatorAwareInterface
 
 					$oRenderer->layout()->subject = $oMessage->getSubject();
 					$oRenderer->layout()->content = $oMessage->getBodyText();
-					return $this->renderView($oRenderer->layout(),function($sHtml) use($oMessage,$oTransporter,$oStyleInliner){
+					$this->renderView($oRenderer->layout(),function($sHtml) use($oMessage,$oTransporter,$oStyleInliner){
 						$oTransporter->send($oMessage->setBody($oStyleInliner->processHtml($sHtml)));
 					});
 					break;
@@ -102,11 +102,14 @@ class MessengerService implements \Zend\I18n\Translator\TranslatorAwareInterface
 	/**
 	 * @param \BoilerAppMessenger\Message $oMessage
 	 * @param string $sMedia
+	 * @throws \InvalidArgumentException
 	 * @throws \UnexpectedValueException
 	 * @throws \DomainException
 	 * @return \BoilerAppMessenger\Mail\Message
 	 */
 	protected function formatMessageForMedia(\BoilerAppMessenger\Message $oMessage,$sMedia){
+		if(!is_string($sMedia))throw new \InvalidArgumentException('Media expects string, "'.gettype($sMedia).'" given');
+
 		switch($sMedia){
 			case self::MEDIA_EMAIL:
 				$oFormatMessage = new \BoilerAppMessenger\Mail\Message();
@@ -188,10 +191,12 @@ class MessengerService implements \Zend\I18n\Translator\TranslatorAwareInterface
 	/**
 	 * Retrieve media renderer
 	 * @param string $sMedia
+	 * @throws \InvalidArgumentException
 	 * @throws \DomainException
 	 * @return \Zend\View\Renderer\RendererInterface
 	 */
-	private function getRenderer($sMedia){
+	protected function getRenderer($sMedia){
+		if(!is_string($sMedia))throw new \InvalidArgumentException('Media expects string, "'.gettype($sMedia).'" given');
 		if(isset($this->renderers[$sMedia]) && $this->renderers[$sMedia] instanceof \Zend\View\Renderer\RendererInterface)return $this->renderers[$sMedia];
 		switch($sMedia){
 			//Renderer for single view

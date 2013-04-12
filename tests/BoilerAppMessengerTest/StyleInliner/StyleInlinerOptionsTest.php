@@ -24,4 +24,18 @@ class StyleInlinerOptionsTest extends \BoilerAppTest\PHPUnit\TestCase\AbstractTe
 	public function testGetProcessor(){
 		$this->assertInstanceOf('BoilerAppMessenger\StyleInliner\Processor\StyleInlinerProcessorInterface', $this->styleInlinerOptions->getProcessor());
 	}
+
+	/**
+	 * @expectedException LogicException
+	 */
+	public function testGetProcessorUnset(){
+		$oReflectionClass = new \ReflectionClass('BoilerAppMessenger\StyleInliner\StyleInlinerOptions');
+		$oProcessor = $oReflectionClass->getProperty('processor');
+		$oProcessor->setAccessible(true);
+		$oProcessor->setValue($this->styleInlinerOptions, null);
+
+		$oGetProcessor = $oReflectionClass->getMethod('getProcessor');
+		$oGetProcessor->setAccessible(true);
+		$oGetProcessor->invokeArgs($this->styleInlinerOptions,array());
+	}
 }

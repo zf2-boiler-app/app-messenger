@@ -12,7 +12,7 @@ abstract class AbstractProcessor implements \BoilerAppMessenger\StyleInliner\Pro
 	 * @param array|Traversable $aOptions
 	 * @return \BoilerAppMessenger\Service\MessengerService
 	 */
-	public static function factory($aOptions){
+	public static function factory($aOptions = array()){
 		if($aOptions instanceof \Traversable)$aOptions = \Zend\Stdlib\ArrayUtils::iteratorToArray($aOptions);
 		elseif(!is_array($aOptions))throw new \InvalidArgumentException(__METHOD__.' expects an array or Traversable object; received "'.(is_object($aOptions)?get_class($aOptions):gettype($aOptions)).'"');
 		$oProcessor = new static();

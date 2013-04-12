@@ -19,10 +19,38 @@ class InlineStyleProcessorTest extends \BoilerAppTest\PHPUnit\TestCase\AbstractT
 		$this->assertEquals(getcwd().DIRECTORY_SEPARATOR.'_files', $this->inlineStyleProcessor->getBaseDir());
 	}
 
+	/**
+	 * @expectedException LogicException
+	 */
+	public function testGetBaseDirUnset(){
+		\BoilerAppMessenger\StyleInliner\Processor\InlineStyleProcessor::factory()->getBaseDir();
+	}
+
+	/**
+	 * @expectedException InvalidArgumentException
+	 */
+	public function testSetWrongBaseDir(){
+		$this->inlineStyleProcessor->setBaseDir('wrong');
+	}
+
 	public function testProcess(){
 		$this->assertEquals(
 			file_get_contents(getcwd().'/_files/expected/styleInliner/simple-test.html'),
 			$this->inlineStyleProcessor->process(file_get_contents(getcwd().'/_files/styleInliner/simple-test.html'))
 		);
+	}
+
+	/**
+	 * @expectedException InvalidArgumentException
+	 */
+	public function testProcessWithoutString(){
+		$this->inlineStyleProcessor->process(array());
+	}
+
+	/**
+	 * @expectedException RuntimeException
+	 */
+	public function testProcessWithWrongHtml(){
+		$this->inlineStyleProcessor->process('<div></span>');
 	}
 }
