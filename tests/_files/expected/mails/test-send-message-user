@@ -17,16 +17,17 @@ Content-Transfer-Encoding: 8bit
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>test subject</title>
+<link href="/cache/62626e2b77fc1188a3f021362c2d48a8.css?cache-timstamp" media="screen" rel="stylesheet" type="text/css">
 </head>
-<body style="width:100% !important;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;margin:0;padding:0">
-	test body <img image-id style="outline:none;text-decoration:none;-ms-interpolation-mode:bicubic;margin:1%">
+<body>
+	test body <img src="cid:image-id">
 </body>
 </html>
 
 --=_boundary
 Content-Type: image/gif
 Content-Transfer-Encoding: base64
-content-id
+Content-ID: <content-id>
 Content-Disposition: inline; filename="test"
 Content-Description: test
 
@@ -55,7 +56,7 @@ Na0sojs4vvynNSMSeEHQbZrnzrXY2esVSr12ZAHRikpMEdKAER3x0AkJuiWaTW+cabDFZVUB
 --=_boundary
 Content-Type: image/gif
 Content-Transfer-Encoding: base64
-content-id
+Content-ID: <content-id>
 Content-Disposition: inline; filename="test"
 Content-Description: test
 

@@ -12,6 +12,7 @@ class MessageTest extends \BoilerAppTest\PHPUnit\TestCase\AbstractTestCase{
 	protected function setUp(){
 		parent::setUp();
 		$this->message = new \BoilerAppMessenger\Message();
+		$this->message->setSubject('Test subject')->setBody('Test body');
 	}
 
 	/**
@@ -29,6 +30,6 @@ class MessageTest extends \BoilerAppTest\PHPUnit\TestCase\AbstractTestCase{
 	}
 
 	public function testToString(){
-		$this->assertEquals('', $this->toString());
+		$this->assertEquals('Test subject'.PHP_EOL.PHP_EOL.'Test body', $this->message->toString());
 	}
 }

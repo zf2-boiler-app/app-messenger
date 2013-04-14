@@ -60,8 +60,8 @@ class MessengerServiceTest extends \BoilerAppTest\PHPUnit\TestCase\AbstractTestC
 		));
 
 		$sMailContent = preg_replace(
-			array('/(Date:[\S|\s]*)(From:)/','/Content-ID: <([a-f0-9]*)>/','/src="cid:[a-f0-9]*"/'),
-			array('$2','content-id','image-id'),
+			array('/(Date:[\S|\s]*)(From:)/','/(Content-ID: <)[a-f0-9]*(>)/','/(src="cid:)[a-f0-9]*(")/','/(href="\/cache\/62626e2b77fc1188a3f021362c2d48a8\.css\?)[0-9]*(")/'),
+			array('$2','$1content-id$2','$1image-id$2','$1cache-timstamp$2'),
 			file_get_contents($sMailDir.DIRECTORY_SEPARATOR.current(array_diff(scandir($sMailDir), array('..', '.','.gitignore'))))
 		);
 
@@ -101,8 +101,8 @@ class MessengerServiceTest extends \BoilerAppTest\PHPUnit\TestCase\AbstractTestC
 		));
 
 		$sMailContent = preg_replace(
-			array('/(Date:[\S|\s]*)(From:)/','/Content-ID: <([a-f0-9]*)>/','/src="cid:[a-f0-9]*"/'),
-			array('$2','content-id','image-id'),
+			array('/(Date:[\S|\s]*)(From:)/','/(Content-ID: <)[a-f0-9]*(>)/','/(src="cid:)[a-f0-9]*(")/','/(href="\/cache\/62626e2b77fc1188a3f021362c2d48a8\.css\?)[0-9]*(")/'),
+			array('$2','$1content-id$2','$1image-id$2','$1cache-timstamp$2'),
 			file_get_contents($sMailDir.DIRECTORY_SEPARATOR.current(array_diff(scandir($sMailDir), array('..', '.','.gitignore'))))
 		);
 
