@@ -23,7 +23,7 @@ return array(
 				$oFileTransport = new \BoilerAppMessenger\Mail\Transport\File(new \Zend\Mail\Transport\FileOptions(array(
 					'path' => __DIR__ . '/_files/mails'
 				)));
-				return $oFileTransport->setBaseDir(getcwd());
+				return $oFileTransport->setBaseDir(__DIR__);
 			},
 			'test' => 'TestTransporter',
 			'test1' => array(
@@ -34,7 +34,7 @@ return array(
 	'service_manager' => array(
 		'factories' => array(
 			'InlineStyleProcessor' => function(){
-				return \BoilerAppMessenger\StyleInliner\Processor\InlineStyleProcessor::factory(array('baseDir' => getcwd().DIRECTORY_SEPARATOR.'_files'));
+				return \BoilerAppMessenger\StyleInliner\Processor\InlineStyleProcessor::factory(array('baseDir' => __DIR__.DIRECTORY_SEPARATOR.'_files'));
 			},
 			'TestTransporter' => function(){
 				return new \BoilerAppMessenger\Mail\Transport\File(new \Zend\Mail\Transport\FileOptions(array(

@@ -12,16 +12,16 @@ class Message extends \BoilerAppTest\PHPUnit\TestCase\AbstractTestCase{
 	protected function setUp(){
 		parent::setUp();
 		$this->message = new \BoilerAppMessenger\Mail\Message();
-		$this->message->addAttachment(getcwd().'/_files/attachments/attachment-test.txt');
+		$this->message->addAttachment(getcwd().'/tests/_files/attachments/attachment-test.txt');
 	}
 
 	public function testGetAttachments(){
-		$this->assertEquals(array(getcwd().'/_files/attachments/attachment-test.txt'), $this->message->getAttachments());
+		$this->assertEquals(array(getcwd().'/tests/_files/attachments/attachment-test.txt'), $this->message->getAttachments());
 	}
 
 	public function testHasAttachments(){
 		$this->assertTrue($this->message->hasAttachments());
-		$this->assertInstanceOf('BoilerAppMessenger\Mail\Message', $this->message->removeAttachment(getcwd().'/_files/attachments/attachment-test.txt'));
+		$this->assertInstanceOf('BoilerAppMessenger\Mail\Message', $this->message->removeAttachment(getcwd().'/tests/_files/attachments/attachment-test.txt'));
 		$this->assertFalse($this->message->hasAttachments());
 	}
 }

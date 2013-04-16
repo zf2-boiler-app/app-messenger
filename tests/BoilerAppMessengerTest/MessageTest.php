@@ -25,8 +25,15 @@ class MessageTest extends \BoilerAppTest\PHPUnit\TestCase\AbstractTestCase{
 	/**
 	 * @expectedException InvalidArgumentException
 	 */
-	public function testAddTo(){
+	public function testAddWrongTo(){
 		$this->message->addTo('wrong');
+	}
+
+	/**
+	 * @expectedException InvalidArgumentException
+	 */
+	public function testAddWrongToArray(){
+		$this->message->addTo(array('wrong'));
 	}
 
 	public function testToString(){

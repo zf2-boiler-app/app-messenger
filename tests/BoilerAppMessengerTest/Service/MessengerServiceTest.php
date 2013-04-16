@@ -19,7 +19,7 @@ class MessengerServiceTest extends \BoilerAppTest\PHPUnit\TestCase\AbstractTestC
 	}
 
 	public function testSendMessage(){
-		$sMailDir = getcwd().'/_files/mails';
+		$sMailDir = getcwd().'/tests/_files/mails';
 
 		//Empty mails directory except .gitignore
 		foreach(new \RecursiveIteratorIterator(
@@ -32,7 +32,7 @@ class MessengerServiceTest extends \BoilerAppTest\PHPUnit\TestCase\AbstractTestC
 
 		//Empty cache directory except .gitignore
 		foreach(new \RecursiveIteratorIterator(
-				new \RecursiveDirectoryIterator(getcwd().'/_files/cache', \RecursiveDirectoryIterator::SKIP_DOTS),
+				new \RecursiveDirectoryIterator(getcwd().'/tests/_files/cache', \RecursiveDirectoryIterator::SKIP_DOTS),
 				\RecursiveIteratorIterator::CHILD_FIRST
 		) as $oFileinfo){
 			if($oFileinfo->isDir())rmdir($oFileinfo->getRealPath());
@@ -60,8 +60,8 @@ class MessengerServiceTest extends \BoilerAppTest\PHPUnit\TestCase\AbstractTestC
 		));
 
 		$sMailContent = preg_replace(
-			array('/(Date:[\S|\s]*)(From:)/','/(Content-ID: <)[a-f0-9]*(>)/','/(src="cid:)[a-f0-9]*(")/','/(href="\/cache\/62626e2b77fc1188a3f021362c2d48a8\.css\?)[0-9]*(")/'),
-			array('$2','$1content-id$2','$1image-id$2','$1cache-timstamp$2'),
+			array('/(Date:[\S|\s]*)(From:)/','/(Content-ID: <)[a-f0-9]*(>)/','/(src="cid:)[a-f0-9]*(")/'),
+			array('$2','$1content-id$2','$1image-id$2'),
 			file_get_contents($sMailDir.DIRECTORY_SEPARATOR.current(array_diff(scandir($sMailDir), array('..', '.','.gitignore'))))
 		);
 
@@ -74,7 +74,7 @@ class MessengerServiceTest extends \BoilerAppTest\PHPUnit\TestCase\AbstractTestC
 
 		//Test mail content
 		$this->assertEquals(
-			file_get_contents(getcwd().'/_files/expected/mails/test-send-message-system'),
+			file_get_contents(getcwd().'/tests/_files/expected/mails/test-send-message-system'),
 			$sMailContent
 		);
 
@@ -101,8 +101,8 @@ class MessengerServiceTest extends \BoilerAppTest\PHPUnit\TestCase\AbstractTestC
 		));
 
 		$sMailContent = preg_replace(
-			array('/(Date:[\S|\s]*)(From:)/','/(Content-ID: <)[a-f0-9]*(>)/','/(src="cid:)[a-f0-9]*(")/','/(href="\/cache\/62626e2b77fc1188a3f021362c2d48a8\.css\?)[0-9]*(")/'),
-			array('$2','$1content-id$2','$1image-id$2','$1cache-timstamp$2'),
+			array('/(Date:[\S|\s]*)(From:)/','/(Content-ID: <)[a-f0-9]*(>)/','/(src="cid:)[a-f0-9]*(")/'),
+			array('$2','$1content-id$2','$1image-id$2'),
 			file_get_contents($sMailDir.DIRECTORY_SEPARATOR.current(array_diff(scandir($sMailDir), array('..', '.','.gitignore'))))
 		);
 
@@ -115,7 +115,7 @@ class MessengerServiceTest extends \BoilerAppTest\PHPUnit\TestCase\AbstractTestC
 
 		//Test mail content
 		$this->assertEquals(
-			file_get_contents(getcwd().'/_files/expected/mails/test-send-message-user'),
+			file_get_contents(getcwd().'/tests/_files/expected/mails/test-send-message-user'),
 			$sMailContent
 		);
 
@@ -143,8 +143,8 @@ class MessengerServiceTest extends \BoilerAppTest\PHPUnit\TestCase\AbstractTestC
 	 * @param string $sHtml
 	 */
 	public function renderViewCallback($sHtml){
-		file_put_contents(getcwd().'/_files/expected/simple-view.phtml', $sHtml);
-		$this->assertEquals(file_get_contents(getcwd().'/_files/expected/simple-view.phtml'), $sHtml);
+		file_put_contents(getcwd().'/tests/_files/expected/simple-view.phtml', $sHtml);
+		$this->assertEquals(file_get_contents(getcwd().'/tests/_files/expected/simple-view.phtml'), $sHtml);
 	}
 
 	/**

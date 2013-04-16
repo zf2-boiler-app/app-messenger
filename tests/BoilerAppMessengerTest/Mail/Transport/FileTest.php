@@ -17,7 +17,7 @@ class FileTest extends \BoilerAppTest\PHPUnit\TestCase\AbstractTestCase{
 	protected function setUp(){
 		parent::setUp();
 
-		$sMailDir = getcwd().'/_files/mails';
+		$sMailDir = getcwd().'/tests/_files/mails';
 
 		//Empty mails directory except .gitignore
 		foreach(new \RecursiveIteratorIterator(
@@ -40,7 +40,7 @@ class FileTest extends \BoilerAppTest\PHPUnit\TestCase\AbstractTestCase{
 		->addTo('test-from-user@test.com','Test "From" User')
 		->setSubject('test subject')
 		->setBody('test body')
-		->addAttachment(getcwd().'/_files/attachments/attachment-test.txt');
+		->addAttachment(getcwd().'/tests/_files/attachments/attachment-test.txt');
 	}
 
 	public function testSend(){
@@ -48,7 +48,7 @@ class FileTest extends \BoilerAppTest\PHPUnit\TestCase\AbstractTestCase{
 		$this->fileTransport->send($this->message);
 
 		//Test mail content
-		$sMailDir = getcwd().'/_files/mails';
+		$sMailDir = getcwd().'/tests/_files/mails';
 		$sMailContent = preg_replace(
 			array('/(Date:[\S|\s]*)(From:)/','/Content-ID: <([a-f0-9]*)>/'),
 			array('$2','content-id'),
@@ -63,7 +63,7 @@ class FileTest extends \BoilerAppTest\PHPUnit\TestCase\AbstractTestCase{
 		$sMailContent = str_ireplace($aMatches[1],'boundary',$sMailContent);
 
 		$this->assertEquals(
-			file_get_contents(getcwd().'/_files/expected/mails/test-send-message'),
+			file_get_contents(getcwd().'/tests/_files/expected/mails/test-send-message'),
 			$sMailContent
 		);
 	}

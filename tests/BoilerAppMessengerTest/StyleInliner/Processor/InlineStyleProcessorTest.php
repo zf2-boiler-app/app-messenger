@@ -12,11 +12,11 @@ class InlineStyleProcessorTest extends \BoilerAppTest\PHPUnit\TestCase\AbstractT
 	 */
 	protected function setUp(){
 		parent::setUp();
-		$this->inlineStyleProcessor = \BoilerAppMessenger\StyleInliner\Processor\InlineStyleProcessor::factory(array('baseDir' => getcwd().DIRECTORY_SEPARATOR.'_files'));
+		$this->inlineStyleProcessor = \BoilerAppMessenger\StyleInliner\Processor\InlineStyleProcessor::factory(array('baseDir' => getcwd().DIRECTORY_SEPARATOR.'tests/_files'));
 	}
 
 	public function testGetBaseDir(){
-		$this->assertEquals(getcwd().DIRECTORY_SEPARATOR.'_files', $this->inlineStyleProcessor->getBaseDir());
+		$this->assertEquals(getcwd().DIRECTORY_SEPARATOR.'tests\\_files', $this->inlineStyleProcessor->getBaseDir());
 	}
 
 	/**
@@ -35,8 +35,8 @@ class InlineStyleProcessorTest extends \BoilerAppTest\PHPUnit\TestCase\AbstractT
 
 	public function testProcess(){
 		$this->assertEquals(
-			file_get_contents(getcwd().'/_files/expected/styleInliner/simple-test.html'),
-			$this->inlineStyleProcessor->process(file_get_contents(getcwd().'/_files/styleInliner/simple-test.html'))
+			file_get_contents(getcwd().'/tests/_files/expected/styleInliner/simple-test.html'),
+			$this->inlineStyleProcessor->process(file_get_contents(getcwd().'/tests/_files/styleInliner/simple-test.html'))
 		);
 	}
 
