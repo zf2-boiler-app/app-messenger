@@ -10,6 +10,9 @@
             "role": "Developer"
         }
     ],
+    "support": {
+        "issues": "https://github.com/zf2-boiler-app/app-messenger/issues"
+    },
     "minimum-stability" : "dev",
     "repositories":[        
         {
@@ -64,5 +67,10 @@
             "BoilerAppMessenger": "src"
         },
         "classmap" : ["Module.php"]
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0-dev"
+        }
     }
 }
