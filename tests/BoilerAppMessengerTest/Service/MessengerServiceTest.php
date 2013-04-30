@@ -32,8 +32,8 @@ class MessengerServiceTest extends \BoilerAppTest\PHPUnit\TestCase\AbstractTestC
 
 		//Empty cache directory except .gitignore
 		foreach(new \RecursiveIteratorIterator(
-				new \RecursiveDirectoryIterator(getcwd().'/tests/_files/cache', \RecursiveDirectoryIterator::SKIP_DOTS),
-				\RecursiveIteratorIterator::CHILD_FIRST
+			new \RecursiveDirectoryIterator(getcwd().'/tests/_files/cache', \RecursiveDirectoryIterator::SKIP_DOTS),
+			\RecursiveIteratorIterator::CHILD_FIRST
 		) as $oFileinfo){
 			if($oFileinfo->isDir())rmdir($oFileinfo->getRealPath());
 			elseif($oFileinfo->getBasename() !== '.gitignore')unlink($oFileinfo->getRealPath());
@@ -43,19 +43,20 @@ class MessengerServiceTest extends \BoilerAppTest\PHPUnit\TestCase\AbstractTestC
 		$oMessage = new \BoilerAppMessenger\Message();
 
 		//"From" user
-		$oFromUser = new \BoilerAppUser\Entity\UserEntity();
 		$oFromUserAuthAccess = new \BoilerAppAccessControl\Entity\AuthAccessEntity();
+		$oFromUserAuthAccess->setAuthAccessEmailIdentity('test-from-user@test.com');
+		$oFromUser = new \BoilerAppUser\Entity\UserEntity();
+		$oFromUser->setUserAuthAccess($oFromUserAuthAccess)->setUserDisplayName('Test "From" User');
 
-		$oMessage->setSubject('test subject')->setBody('test body <img src="_files/images/test.gif"/>')->setFrom(
-			$oFromUser->setUserAuthAccess(
-				$oFromUserAuthAccess->setAuthAccessEmailIdentity('test-from-user@test.com')
-			)
-			->setUserDisplayName('Test "From" User')
-		);
+		$oMessage
+			->setSubject('test subject')
+			->setBody('test body <img src="_files/images/test.gif"/>')
+			->setFrom($oFromUser)
+			->setTo(\BoilerAppMessenger\Message::SYSTEM_USER);
 
 		//Send to system
-		$this->assertInstanceOf('\BoilerAppMessenger\Service\MessengerService',$this->messengerService->sendMessage(
-			$oMessage->setTo(\BoilerAppMessenger\Message::SYSTEM_USER),
+		/*$this->assertInstanceOf('\BoilerAppMessenger\Service\MessengerService',$this->messengerService->sendMessage(
+			$oMessage,
 			\BoilerAppMessenger\Service\MessengerService::MEDIA_EMAIL
 		));
 
@@ -87,16 +88,27 @@ class MessengerServiceTest extends \BoilerAppTest\PHPUnit\TestCase\AbstractTestC
 			elseif($oFileinfo->getBasename() !== '.gitignore')unlink($oFileinfo->getRealPath());
 		}
 
+		//Empty cache directory except .gitignore
+		foreach(new \RecursiveIteratorIterator(
+				new \RecursiveDirectoryIterator(getcwd().'/tests/_files/cache', \RecursiveDirectoryIterator::SKIP_DOTS),
+				\RecursiveIteratorIterator::CHILD_FIRST
+		) as $oFileinfo){
+			if($oFileinfo->isDir())rmdir($oFileinfo->getRealPath());
+			elseif($oFileinfo->getBasename() !== '.gitignore')unlink($oFileinfo->getRealPath());
+		}*/
+
 		//Send to user
-		$oToUser = new \BoilerAppUser\Entity\UserEntity();
 		$oToUserAuthAccess = new \BoilerAppAccessControl\Entity\AuthAccessEntity();
+		$oToUserAuthAccess->setAuthAccessEmailIdentity('test-user@test.com');
+		$oToUser = new \BoilerAppUser\Entity\UserEntity();
+		$oToUser->setUserAuthAccess($oToUserAuthAccess)->setUserDisplayName('Test "To" User');
+
+		//Set to User
+		$oMessage->setTo($oToUser);
+
+		//Send message
 		$this->assertInstanceOf('\BoilerAppMessenger\Service\MessengerService',$this->messengerService->sendMessage(
-			$oMessage->setTo(
-				$oToUser->setUserAuthAccess(
-					$oToUserAuthAccess->setAuthAccessEmailIdentity('test-user@test.com')
-				)
-				->setUserDisplayName('Test "To" User')
-			),
+			$oMessage,
 			\BoilerAppMessenger\Service\MessengerService::MEDIA_EMAIL
 		));
 
@@ -119,11 +131,14 @@ class MessengerServiceTest extends \BoilerAppTest\PHPUnit\TestCase\AbstractTestC
 			$sMailContent
 		);
 
-		//Send to system
+		//Send to system from system
+		$oMessage
+			->setFrom(\BoilerAppMessenger\Message::SYSTEM_USER)
+			->setTo(\BoilerAppMessenger\Message::SYSTEM_USER);
+
+		//Send message
 		$this->assertInstanceOf('\BoilerAppMessenger\Service\MessengerService',$this->messengerService->sendMessage(
-			$oMessage
-				->setFrom(\BoilerAppMessenger\Message::SYSTEM_USER)
-				->setTo(\BoilerAppMessenger\Message::SYSTEM_USER),
+			$oMessage,
 			\BoilerAppMessenger\Service\MessengerService::MEDIA_EMAIL
 		));
 	}
