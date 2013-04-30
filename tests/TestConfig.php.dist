@@ -1,8 +1,8 @@
 <?php
 return array(
     'modules' => array(
-        'BoilerAppMessenger',
-        'AssetsBundle'
+        'AssetsBundle',
+        'BoilerAppMessenger'
     ),
     'module_listener_options' => array(
 		'config_glob_paths'    => array(
