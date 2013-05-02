@@ -47,7 +47,7 @@
     "require": {
         "php": ">=5.3.3",
         "ext-fileinfo": "*",
-        "zendframework/zendframework": "2.2.*",
+        "zendframework/zendframework": "2.3.*",
         "inlinestyle/inlinestyle": "dev-master",
         "zf2-boiler-app/app-user": "1.0.*"
     },
