@@ -1,6 +1,6 @@
 <?php
-namespace BoilerAppMessenger\Mail\Transport;
-trait AttachementsAwareTrait{
+namespace BoilerAppMessenger\Mail;
+trait MailMessageTransporterTrait{
 
 	/**
 	 * @var string
@@ -38,6 +38,7 @@ trait AttachementsAwareTrait{
 		throw new \LogicException('Base dir option is undefined');
 	}
 
+
 	/**
 	 * Prepare message body
 	 * @param \BoilerAppMessenger\Mail\Message $oMessage
@@ -47,6 +48,8 @@ trait AttachementsAwareTrait{
 		if($oMessage->hasattachments())foreach($oMessage->getAttachments() as $sAttachmentPath){
 			$this->addAttachment($sAttachmentPath);
 		}
+
+		//Inline style / attach images
 		$oBodyPart = new \Zend\Mime\Part(preg_replace_callback('/src="([^"]+)"/',array($this,'processImageSrc'),$oMessage->getBodyText()));
 		$oBodyPart->type = \Zend\Mime\Mime::TYPE_HTML;
 		$oBody = new \Zend\Mime\Message();

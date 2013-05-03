@@ -21,24 +21,24 @@ class MessengerService implements \Zend\I18n\Translator\TranslatorAwareInterface
 	private $templatingService;
 
 	/**
-	 * @var \BoilerAppMessenger\StyleInliner\StyleInlinerService
-	 */
-	private $styleInliner;
-
-	/**
 	 * @var \Zend\Mvc\Router\RouteStackInterface
 	 */
 	private $router;
 
 	/**
-	 * @var array<\Zend\View\Renderer\RendererInterface>
+	 * @var array<\BoilerAppMessenger\MessageAdapterInterface>
 	 */
-	private $renderers;
+	private $messageAdapters = array();
 
 	/**
-	 * @var array<\Zend\Mail\Transport\TransportInterface>
+	 * @var array<\BoilerAppMessenger\MessageRendererInterface>
 	 */
-	private $transporters = array();
+	private $messageRenderers;
+
+	/**
+	 * @var array<\BoilerAppMessenger\MessageTransporterInterface>
+	 */
+	private $messageTransporters = array();
 
 	/**
 	 * Constructor
@@ -71,88 +71,15 @@ class MessengerService implements \Zend\I18n\Translator\TranslatorAwareInterface
 		elseif(is_string($aMedias))$aMedias = array($aMedias);
 		elseif(!is_array($aMedias))throw new \InvalidArgumentException('$aMedias expects an array or a string, "'.gettype($aMedias).'" given');
 
-		foreach(array_unique($aMedias) as $sMedia){
-			switch($sMedia){
-				case self::MEDIA_EMAIL:
-					//Format message for email transporter
-					$oMessage = $this->formatMessageForMedia($oMessage, $sMedia);
+		foreach(array_filter(array_unique($aMedias)) as $sMedia){
+			//Retrieve transporter
+			$oTransporter = $this->getTransporter($sMedia);
 
-					//Retrieve transporter
-					$oTransporter = $this->getTransporter(self::MEDIA_EMAIL);
-
-					//Retrieve le renderer
-					$oRenderer = $this->getRenderer(self::MEDIA_EMAIL);
-
-					//InlineStyle
-					$oStyleInliner = $this->getStyleInliner();
-
-					$oRenderer->layout()->subject = $oMessage->getSubject();
-					$oRenderer->layout()->content = $oMessage->getBodyText();
-					$this->renderView($oRenderer->layout(),function($sHtml) use($oMessage,$oTransporter,$oStyleInliner){
-						$oTransporter->send($oMessage->setBody($oStyleInliner->processHtml($sHtml)));
-					});
-					break;
-				default:
-					throw new \DomainException('Media "'.$sMedia.'" is not a valid media');
-			}
+			$this->getRenderer($sMedia)->renderMessage($oMessage,function($oMessage){
+				$oTransporter->send($oMessage);
+			});
 		}
 		return $this;
-	}
-
-	/**
-	 * @param \BoilerAppMessenger\Message $oMessage
-	 * @param string $sMedia
-	 * @throws \InvalidArgumentException
-	 * @throws \UnexpectedValueException
-	 * @throws \DomainException
-	 * @return \BoilerAppMessenger\Mail\Message
-	 */
-	protected function formatMessageForMedia(\BoilerAppMessenger\Message $oMessage,$sMedia){
-		if(!is_string($sMedia))throw new \InvalidArgumentException('Media expects string, "'.gettype($sMedia).'" given');
-
-		switch($sMedia){
-			case self::MEDIA_EMAIL:
-				$oFormatMessage = new \BoilerAppMessenger\Mail\Message();
-				$oFormatMessage->setEncoding('UTF-8');
-
-				//From Sender
-				$oFrom = $oMessage->getFrom();
-				if($oFrom === \BoilerAppMessenger\Message::SYSTEM_USER)$oFormatMessage->setFrom(
-					$this->getOptions()->getSystemUserEmail(),
-					$this->getOptions()->getSystemUserName()
-				);
-				elseif($oFrom instanceof \BoilerAppUser\Entity\UserEntity)$oFormatMessage->setFrom(
-					$oFrom->getUserAuthAccess()->getAuthAccessEmailIdentity(),
-					$oFrom->getUserDisplayName()
-				);
-				else throw new \UnexpectedValueException(sprintf(
-					'"From" sender expects \BoilerAppMessenger\Message::SYSTEM_USER or \BoilerAppUser\Entity\UserEntity, "%s" given',
-					is_scalar($oFrom)?$oFrom:(is_object($oFrom)?get_class($oFrom):gettype($oFrom))
-				));
-
-				//To Recipiants
-				foreach($oMessage->getTo() as $oTo){
-					if($oTo === \BoilerAppMessenger\Message::SYSTEM_USER)$oFormatMessage->addTo(
-						$this->getOptions()->getSystemUserEmail(),
-						$this->getOptions()->getSystemUserName()
-					);
-					elseif($oTo instanceof \BoilerAppUser\Entity\UserEntity)$oFormatMessage->addTo(
-						$oTo->getUserAuthAccess()->getAuthAccessEmailIdentity(),
-						$oTo->getUserDisplayName()
-					);
-					else throw new \UnexpectedValueException('"To" Recipiant expects \BoilerAppMessenger\Message::SYSTEM_USER or \BoilerAppUser\Entity\UserEntity');
-				}
-
-				//Subject
-				$oFormatMessage->setSubject($oMessage->getSubject());
-
-				//Body
-				$oFormatMessage->setBody($oMessage->getBody());
-				break;
-			default:
-				throw new \DomainException('Media "'.$sMedia.'" is not a valid media');
-		}
-		return $oFormatMessage;
 	}
 
 	/**
@@ -189,59 +116,6 @@ class MessengerService implements \Zend\I18n\Translator\TranslatorAwareInterface
 	}
 
 	/**
-	 * Retrieve media renderer
-	 * @param string $sMedia
-	 * @throws \InvalidArgumentException
-	 * @throws \DomainException
-	 * @return \Zend\View\Renderer\RendererInterface
-	 */
-	protected function getRenderer($sMedia){
-		if(!is_string($sMedia))throw new \InvalidArgumentException('Media expects string, "'.gettype($sMedia).'" given');
-		if(isset($this->renderers[$sMedia]) && $this->renderers[$sMedia] instanceof \Zend\View\Renderer\RendererInterface)return $this->renderers[$sMedia];
-		switch($sMedia){
-			//Renderer for single view
-			case 'default':
-				$this->renderers[$sMedia] = new \Zend\View\Renderer\PhpRenderer();
-				$this->renderers[$sMedia]->setResolver(new \Zend\View\Resolver\TemplateMapResolver($this->getOptions()->hasTemplateMap()?$this->getOptions()->getTemplateMap():null));
-				break;
-
-			//Renderer for email
-			case self::MEDIA_EMAIL:
-				$this->renderers[$sMedia] = new \BoilerAppMessenger\View\Renderer\EmailRenderer();
-
-				//Create layout template
-				$oLayout = new \Zend\View\Model\ViewModel();
-				$oEvent = new \Zend\Mvc\MvcEvent(\Zend\Mvc\MvcEvent::EVENT_RENDER);
-				$this->getTemplatingService()->buildLayoutTemplate($oEvent
-					->setRequest(new \Zend\Http\Request())
-					->setViewModel($oLayout)
-				);
-
-				$this->renderers[$sMedia]->setResolver(
-					new \Zend\View\Resolver\TemplateMapResolver($this->getOptions()->hasTemplateMap()?$this->getOptions()->getTemplateMap():null)
-				)->plugin('view_model')->setRoot($oEvent->getViewModel());
-				break;
-
-			default:
-				throw new \DomainException('Media "'.$sMedia.'" is not a defined media');
-		}
-
-		//Add mandatory helpers
-		$oTranslateHelper = new \Zend\I18n\View\Helper\Translate();
-		$this->renderers[$sMedia]->getHelperPluginManager()->setService(
-			'translate',
-			$oTranslateHelper->setTranslator($this->getTranslator())->setTranslatorEnabled(true)
-		);
-
-		$oUrlHelper = new \Zend\View\Helper\Url();
-		$this->renderers[$sMedia]->getHelperPluginManager()->setService(
-			'url',
-			$oUrlHelper->setRouter($this->getRouter())
-		);
-		return $this->renderers[$sMedia];
-	}
-
-	/**
 	 * @param \BoilerAppMessenger\Service\MessengerOptions $oOptions
 	 * @return \BoilerAppMessenger\Service\MessengerService
 	 */
@@ -254,7 +128,7 @@ class MessengerService implements \Zend\I18n\Translator\TranslatorAwareInterface
 	 * @throws \LogicException
 	 * @return \BoilerAppMessenger\Service\MessengerOptions
 	 */
-	private function getOptions(){
+	protected function getOptions(){
 		if($this->options instanceof \BoilerAppMessenger\Service\MessengerOptions)return $this->options;
 		throw new \LogicException('Options are undefined');
 	}
@@ -272,7 +146,7 @@ class MessengerService implements \Zend\I18n\Translator\TranslatorAwareInterface
 	 * @throws \LogicException
 	 * @return \AssetsBundle\Service\Service
 	 */
-	private function getAssetsBundleService(){
+	protected function getAssetsBundleService(){
 		if($this->assetsBundleService instanceof \AssetsBundle\Service\Service)return $this->assetsBundleService;
 		throw new \LogicException('AssetsBundle Service is undefined');
 	}
@@ -290,58 +164,102 @@ class MessengerService implements \Zend\I18n\Translator\TranslatorAwareInterface
 	 * @throws \LogicException
 	 * @return \TreeLayoutStack\TemplatingService
 	 */
-	private function getTemplatingService(){
+	protected function getTemplatingService(){
 		if($this->templatingService instanceof \TreeLayoutStack\TemplatingService)return $this->templatingService;
 		throw new \LogicException('Templating Service is undefined');
 	}
 
 	/**
-	 * @param \BoilerAppMessenger\StyleInliner\StyleInlinerService $oStyleInliner
-	 * @return \BoilerAppMessenger\Service\MessengerService
-	 */
-	public function setStyleInliner(\BoilerAppMessenger\StyleInliner\StyleInlinerService $oStyleInliner){
-		$this->styleInliner = $oStyleInliner;
-		return $this;
-	}
-
-	/**
-	 * @throws \LogicException
-	 * @return \BoilerAppMessenger\StyleInliner\StyleInlinerService
-	 */
-	private function getStyleInliner(){
-		if($this->styleInliner instanceof \BoilerAppMessenger\StyleInliner\StyleInlinerService)return $this->styleInliner;
-		throw new \LogicException('StyleInliner is undefined');
-	}
-
-	/**
-	 * @param \Zend\Mail\Transport\TransportInterface $oTransporter
+	 * @param \BoilerAppMessenger\MessageAdapter\MessageAdapterInterface $oMessageAdapter
 	 * @param string $sMedia
 	 * @throws \InvalidArgumentException
 	 * @return \BoilerAppMessenger\Service\MessengerService
 	 */
-	public function setTransporter(\Zend\Mail\Transport\TransportInterface $oTransporter,$sMedia){
+	public function setMessageAdapter(\BoilerAppMessenger\MessageAdapter\MessageAdapterInterface $oMessageAdapter,$sMedia){
 		if(empty($sMedia) || !is_string($sMedia))throw new \InvalidArgumentException(sprintf(
 			'Media expects string not empty, "%s" given',
 			is_scalar($sMedia)?$sMedia:gettype($sMedia)
 		));
-		$this->transporters[$sMedia] = $oTransporter;
+		$this->messageAdapters[$sMedia] = $oMessageAdapter;
 		return $this;
 	}
 
 	/**
-	 * Retrieve media transporter
+	 * Retrieve message adapter for given media
 	 * @param string $sMedia
 	 * @throws \InvalidArgumentException
 	 * @throws \LogicException
-	 * @return \Zend\Mail\Transport\TransportInterface
+	 * @return \BoilerAppMessenger\MessageAdapterInterface
 	 */
-	private function getTransporter($sMedia){
+	protected function getMessageAdapter($sMedia){
 		if(empty($sMedia) || !is_string($sMedia))throw new \InvalidArgumentException(sprintf(
 			'Media expects string not empty, "%s" given',
 			is_scalar($sMedia)?$sMedia:gettype($sMedia)
 		));
-		if(isset($this->transporters[$sMedia]) && $this->transporters[$sMedia] instanceof \Zend\Mail\Transport\TransportInterface)return $this->transporters[$sMedia];
-		else throw new \LogicException('Transporter is not defined for media "'.$sMedia.'"');
+		if(isset($this->messageAdapters[$sMedia]) && $this->messageAdapters[$sMedia] instanceof \BoilerAppMessenger\MessageAdapterInterface)return $this->messageAdapters[$sMedia];
+		else throw new \LogicException('Message adapter is not defined for media "'.$sMedia.'"');
+	}
+
+	/**
+	 * @param \BoilerAppMessenger\MessageTransporterInterface $oMessageTransporter
+	 * @param string $sMedia
+	 * @throws \InvalidArgumentException
+	 * @return \BoilerAppMessenger\Service\MessengerService
+	 */
+	public function setMessageTransporter(\BoilerAppMessenger\MessageTransporterInterface $oMessageTransporter,$sMedia){
+		if(empty($sMedia) || !is_string($sMedia))throw new \InvalidArgumentException(sprintf(
+			'Media expects string not empty, "%s" given',
+			is_scalar($sMedia)?$sMedia:gettype($sMedia)
+		));
+		$this->messageTransporters[$sMedia] = $oMessageTransporter;
+		return $this;
+	}
+
+	/**
+	 * Retrieve message transporter for given media
+	 * @param string $sMedia
+	 * @throws \InvalidArgumentException
+	 * @throws \LogicException
+	 * @return \BoilerAppMessenger\MessageTransporterInterface
+	 */
+	protected function getTransporter($sMedia){
+		if(empty($sMedia) || !is_string($sMedia))throw new \InvalidArgumentException(sprintf(
+			'Media expects string not empty, "%s" given',
+			is_scalar($sMedia)?$sMedia:gettype($sMedia)
+		));
+		if(isset($this->messageTransporters[$sMedia]) && $this->messageTransporters[$sMedia] instanceof \BoilerAppMessenger\MessageTransporterInterface)return $this->messageTransporters[$sMedia];
+		else throw new \LogicException('Message transporter is not defined for media "'.$sMedia.'"');
+	}
+
+	/**
+	 * @param \BoilerAppMessenger\MessageRendererInterface $oMessageRenderer
+	 * @param string $sMedia
+	 * @throws \InvalidArgumentException
+	 * @return \BoilerAppMessenger\Service\MessengerService
+	 */
+	public function setRenderer(\BoilerAppMessenger\MessageRendererInterface $oMessageRenderer,$sMedia){
+		if(empty($sMedia) || !is_string($sMedia))throw new \InvalidArgumentException(sprintf(
+			'Media expects string not empty, "%s" given',
+			is_scalar($sMedia)?$sMedia:gettype($sMedia)
+		));
+		$this->messageRenderers[$sMedia] = $oMessageRenderer;
+		return $this;
+	}
+
+	/**
+	 * Retrieve message renderer for given media
+	 * @param string $sMedia
+	 * @throws \InvalidArgumentException
+	 * @throws \LogicException
+	 * @return \BoilerAppMessenger\MessageRendererInterface
+	 */
+	protected function getRenderer($sMedia){
+		if(empty($sMedia) || !is_string($sMedia))throw new \InvalidArgumentException(sprintf(
+			'Media expects string not empty, "%s" given',
+			is_scalar($sMedia)?$sMedia:gettype($sMedia)
+		));
+		if(isset($this->messageRenderers[$sMedia]) && $this->messageRenderers[$sMedia] instanceof \BoilerAppMessenger\MessageRendererInterface)return $this->messageRenderers[$sMedia];
+		else throw new \LogicException('Message renderer is not defined for media "'.$sMedia.'"');
 	}
 
 	/**

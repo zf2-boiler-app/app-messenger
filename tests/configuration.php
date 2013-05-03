@@ -36,6 +36,9 @@ return array(
 			'InlineStyleProcessor' => function(){
 				return \BoilerAppMessenger\StyleInliner\Processor\InlineStyleProcessor::factory(array('baseDir' => __DIR__.DIRECTORY_SEPARATOR.'_files'));
 			},
+			'CssToInlineStylesProcessor' => function(){
+				return \BoilerAppMessenger\StyleInliner\Processor\CssToInlineStylesProcessor::factory(array('baseDir' => __DIR__.DIRECTORY_SEPARATOR.'_files'));
+			},
 			'TestTransporter' => function(){
 				return new \BoilerAppMessenger\Mail\Transport\File(new \Zend\Mail\Transport\FileOptions(array(
 					'path' => __DIR__ . '/_files/mails'

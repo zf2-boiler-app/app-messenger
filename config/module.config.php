@@ -19,7 +19,7 @@ return array(
 		)
 	),
 	'style_inliner' => array(
-		'processor' => 'InlineStyleProcessor'
+		'processor' => 'CssToInlineStylesProcessor'
 	),
 	'service_manager' => array(
 		'factories' => array(

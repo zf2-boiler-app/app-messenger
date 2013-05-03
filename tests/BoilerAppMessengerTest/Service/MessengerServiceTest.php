@@ -55,7 +55,7 @@ class MessengerServiceTest extends \BoilerAppTest\PHPUnit\TestCase\AbstractTestC
 			->setTo(\BoilerAppMessenger\Message::SYSTEM_USER);
 
 		//Send to system
-		/*$this->assertInstanceOf('\BoilerAppMessenger\Service\MessengerService',$this->messengerService->sendMessage(
+		$this->assertInstanceOf('\BoilerAppMessenger\Service\MessengerService',$this->messengerService->sendMessage(
 			$oMessage,
 			\BoilerAppMessenger\Service\MessengerService::MEDIA_EMAIL
 		));
@@ -90,12 +90,12 @@ class MessengerServiceTest extends \BoilerAppTest\PHPUnit\TestCase\AbstractTestC
 
 		//Empty cache directory except .gitignore
 		foreach(new \RecursiveIteratorIterator(
-				new \RecursiveDirectoryIterator(getcwd().'/tests/_files/cache', \RecursiveDirectoryIterator::SKIP_DOTS),
-				\RecursiveIteratorIterator::CHILD_FIRST
+			new \RecursiveDirectoryIterator(getcwd().'/tests/_files/cache', \RecursiveDirectoryIterator::SKIP_DOTS),
+			\RecursiveIteratorIterator::CHILD_FIRST
 		) as $oFileinfo){
 			if($oFileinfo->isDir())rmdir($oFileinfo->getRealPath());
 			elseif($oFileinfo->getBasename() !== '.gitignore')unlink($oFileinfo->getRealPath());
-		}*/
+		}
 
 		//Send to user
 		$oToUserAuthAccess = new \BoilerAppAccessControl\Entity\AuthAccessEntity();
@@ -158,7 +158,6 @@ class MessengerServiceTest extends \BoilerAppTest\PHPUnit\TestCase\AbstractTestC
 	 * @param string $sHtml
 	 */
 	public function renderViewCallback($sHtml){
-		file_put_contents(getcwd().'/tests/_files/expected/simple-view.phtml', $sHtml);
 		$this->assertEquals(file_get_contents(getcwd().'/tests/_files/expected/simple-view.phtml'), $sHtml);
 	}
 

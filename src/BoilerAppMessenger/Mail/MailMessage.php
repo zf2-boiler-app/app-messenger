@@ -1,6 +1,6 @@
 <?php
 namespace BoilerAppMessenger\Mail;
-class Message extends \Zend\Mail\Message{
+class MailMessage extends \Zend\Mail\Message{
 
 	/**
 	 * @var array
