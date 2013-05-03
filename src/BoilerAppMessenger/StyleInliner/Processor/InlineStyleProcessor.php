@@ -15,19 +15,24 @@ class InlineStyleProcessor extends \BoilerAppMessenger\StyleInliner\Processor\Ab
 	public function process($sHtml){
 		if(is_string($sHtml)){
 			$oInlineStyle = $this->getInlineStyle();
-			try{
-				$oInlineStyle->loadHTML($sHtml);
-				return $oInlineStyle->applyStylesheet($oInlineStyle->extractStylesheets(null,$this->getBaseDir()))->getHTML();
+
+			//Remove query part from link url if base dir is not an url
+			if(strpos($this->getBaseDir(), '://') === false){
+				$oDOMDocument = new \DOMDocument();
+				$oDOMDocument->loadHTML($sHtml);
+				$oDOMXPath = new \DOMXPath($oDOMDocument);
+				foreach($oDOMXPath->query('//*/link[@rel="stylesheet"]/@href') as $oLinkNode){
+					if(strpos($oLinkNode->nodeValue, '://') === false)$oLinkNode->nodeValue = current(explode('?',$oLinkNode->nodeValue));
+				}
+				$sHtml = $oDOMDocument->saveHTML();
 			}
-			catch(\Exception $oException){
-				throw new \RuntimeException('Error appends during process', $oException->getCode(), $oException);
-			}
+			$oInlineStyle->loadHTML($sHtml);
+			return $oInlineStyle->applyStylesheet($oInlineStyle->extractStylesheets(null,$this->getBaseDir()))->getHTML();
 		}
 		throw new \InvalidArgumentException('Html expects string, "'.gettype($sHtml).'" given');
 	}
 
 	/**
-	 * @throws \LogicException
 	 * @return \InlineStyle\InlineStyle
 	 */
 	private function getInlineStyle(){

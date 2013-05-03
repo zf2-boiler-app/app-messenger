@@ -35,7 +35,7 @@ class InlineStyleProcessorTest extends \BoilerAppTest\PHPUnit\TestCase\AbstractT
 
 	public function testProcess(){
 		$this->assertEquals(
-			file_get_contents(getcwd().'/tests/_files/expected/styleInliner/simple-test.html'),
+			file_get_contents(getcwd().'/tests/_files/expected/styleInliner/inlinestyle-simple-test.html'),
 			$this->inlineStyleProcessor->process(file_get_contents(getcwd().'/tests/_files/styleInliner/simple-test.html'))
 		);
 	}
@@ -45,12 +45,5 @@ class InlineStyleProcessorTest extends \BoilerAppTest\PHPUnit\TestCase\AbstractT
 	 */
 	public function testProcessWithoutString(){
 		$this->inlineStyleProcessor->process(array());
-	}
-
-	/**
-	 * @expectedException RuntimeException
-	 */
-	public function testProcessWithWrongHtml(){
-		$this->inlineStyleProcessor->process('<div></span>');
 	}
 }

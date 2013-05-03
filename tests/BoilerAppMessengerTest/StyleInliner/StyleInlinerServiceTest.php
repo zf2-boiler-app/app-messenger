@@ -35,7 +35,7 @@ class StyleInlinerServiceTest extends \BoilerAppTest\PHPUnit\TestCase\AbstractTe
 
 	public function testProcessHtml(){
 		$this->assertEquals(
-			file_get_contents(getcwd().'/tests/_files/expected/styleInliner/simple-test.html'),
+			file_get_contents(getcwd().'/tests/_files/expected/styleInliner/inlinestyle-simple-test.html'),
 			$this->styleInlinerService->processHtml(file_get_contents(getcwd().'/tests/_files/styleInliner/simple-test.html'))
 		);
 	}

@@ -26,7 +26,8 @@ return array(
 			'MessengerService' => 'BoilerAppMessenger\Factory\MessengerServiceFactory',
 			'SendmailTransport' => 'BoilerAppMessenger\Factory\Transport\SendmailFactory',
 			'StyleInliner' => 'BoilerAppMessenger\Factory\StyleInlinerFactory',
-			'InlineStyleProcessor' => 'BoilerAppMessenger\Factory\InlineStyleProcessorFactory'
+			'InlineStyleProcessor' => 'BoilerAppMessenger\Factory\InlineStyleProcessorFactory',
+			'CssToInlineStylesProcessor' => 'BoilerAppMessenger\Factory\CssToInlineStylesProcessorFactory'
 		)
 	)
 );

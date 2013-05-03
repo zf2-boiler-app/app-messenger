@@ -1,6 +1,6 @@
 <?php
 namespace BoilerAppMessengerTest\Factory;
-class InlineStyleProcessorTest extends \BoilerAppTest\PHPUnit\TestCase\AbstractTestCase{
+class InlineStyleProcessorFactoryTest extends \BoilerAppTest\PHPUnit\TestCase\AbstractTestCase{
 	public function testCreateService(){
 		//Set fake http host
 		$_SERVER['HTTP_HOST'] = 'boiler-app-messenger-test.com';
