@@ -64,7 +64,7 @@ trait AttachementsAwareTrait{
 		if(empty($aMatches[1]))throw new \InvalidArgumentException('Image "src" match is empty: '.print_r($aMatches));
 
 		$sImgUrl = urldecode($aMatches[1]);
-		if(($sBaseDir = $this->getBaseDir()) && false === strpos($sImgUrl, '://'))$sImgUrl = $sBaseDir.'/'.current(explode('?',$sImgUrl));
+		if(!file_exists($sImgUrl) && ($sBaseDir = $this->getBaseDir()) && false === strpos($sImgUrl, '://'))$sImgUrl = $sBaseDir.'/'.current(explode('?',$sImgUrl));
 		$oAttachment = $this->addAttachment($sImgUrl,\Zend\Mime\Mime::DISPOSITION_INLINE);
 		return 'src="cid:'.$oAttachment->id.'"';
 	}
