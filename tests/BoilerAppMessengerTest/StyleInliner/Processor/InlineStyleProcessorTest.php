@@ -12,11 +12,11 @@ class InlineStyleProcessorTest extends \BoilerAppTest\PHPUnit\TestCase\AbstractT
 	 */
 	protected function setUp(){
 		parent::setUp();
-		$this->inlineStyleProcessor = \BoilerAppMessenger\StyleInliner\Processor\InlineStyleProcessor::factory(array('baseDir' => getcwd().DIRECTORY_SEPARATOR.'tests/_files'));
+		$this->inlineStyleProcessor = \BoilerAppMessenger\StyleInliner\Processor\InlineStyleProcessor::factory(array('baseDir' => realpath(getcwd().DIRECTORY_SEPARATOR.'tests/_files')));
 	}
 
 	public function testGetBaseDir(){
-		$this->assertEquals(getcwd().DIRECTORY_SEPARATOR.'tests\\_files', $this->inlineStyleProcessor->getBaseDir());
+		$this->assertEquals(realpath(getcwd().DIRECTORY_SEPARATOR.'tests/_files'), $this->inlineStyleProcessor->getBaseDir());
 	}
 
 	/**

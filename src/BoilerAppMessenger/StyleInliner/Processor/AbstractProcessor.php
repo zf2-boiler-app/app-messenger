@@ -27,8 +27,8 @@ abstract class AbstractProcessor implements \BoilerAppMessenger\StyleInliner\Pro
 	 */
 	public function setBaseDir($sBaseDir){
 		if(
-		(is_dir($sBaseDir) && ($sBaseDir = realpath($sBaseDir)))
-		|| ($sBaseDir = filter_var($sBaseDir,FILTER_VALIDATE_URL)) !== false
+			(is_dir($sBaseDir) && ($sBaseDir = realpath($sBaseDir)))
+			|| ($sBaseDir = filter_var($sBaseDir,FILTER_VALIDATE_URL)) !== false
 		)$this->baseDir = $sBaseDir;
 		else throw new \InvalidArgumentException(sprintf(
 			'base dir expects valid directory or valid url, "%s" given',
