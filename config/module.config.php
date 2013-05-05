@@ -8,7 +8,7 @@ return array(
 			)
 		),
 		'transporters' => array(
-			\BoilerAppMessenger\Service\MessengerService::MEDIA_EMAIL => 'SendmailTransport'
+			'mail' => 'MailMessageTransporter'
 		),
 		'tree_layout_stack' => array(
 			'layout_tree' => array(
@@ -24,7 +24,7 @@ return array(
 	'service_manager' => array(
 		'factories' => array(
 			'MessengerService' => 'BoilerAppMessenger\Factory\MessengerServiceFactory',
-			'SendmailTransport' => 'BoilerAppMessenger\Factory\Transport\SendmailFactory',
+			'MailMessageTransporter' => 'BoilerAppMessenger\Factory\MailMessageTransporterFactory',
 			'StyleInliner' => 'BoilerAppMessenger\Factory\StyleInlinerFactory',
 			'InlineStyleProcessor' => 'BoilerAppMessenger\Factory\InlineStyleProcessorFactory',
 			'CssToInlineStylesProcessor' => 'BoilerAppMessenger\Factory\CssToInlineStylesProcessorFactory'

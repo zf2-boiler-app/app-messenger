@@ -1,14 +1,18 @@
 <?php
 namespace BoilerAppMessenger\Factory\Transport;
-class SendmailFactory implements \Zend\ServiceManager\FactoryInterface{
+class MailMessageTransporterFactory implements \Zend\ServiceManager\FactoryInterface{
 
 	/**
 	 * @see \Zend\ServiceManager\FactoryInterface::createService()
 	 * @param \Zend\ServiceManager\ServiceLocatorInterface $oServiceLocator
-	 * @return \BoilerAppMessenger\Mail\Transport\Sendmail
+	 * @return \BoilerAppMessenger\Mail\MailMessageTransporter
 	 */
 	public function createService(\Zend\ServiceManager\ServiceLocatorInterface $oServiceLocator){
-		$oSendmailTransport = new \BoilerAppMessenger\Mail\Transport\Sendmail();
+		$oMailMessageTransporter = new \BoilerAppMessenger\Mail\MailMessageTransporter();
+
+		//Define mail transporter
+		$oMailMessageTransporter->setTransporter(new \BoilerAppMessenger\Mail\Transport\Sendmail());
+
 		//Retrieve base dir
 		if(
 			$oServiceLocator->has('ViewHelperManager')
@@ -16,7 +20,7 @@ class SendmailFactory implements \Zend\ServiceManager\FactoryInterface{
 			&& $oViewHelperManager->has('ServerUrl')
 			&& ($oServerUrl = $oViewHelperManager->get('ServerUrl')) instanceof \Zend\View\Helper\ServerUrl
 			&& $sServerUrl = $oServerUrl()
-		)$oSendmailTransport->setBaseDir($sServerUrl);
-    	return $oSendmailTransport;
+		)$oMailMessageTransporter->setBaseDir($sServerUrl);
+    	return $oMailMessageTransporter;
     }
 }

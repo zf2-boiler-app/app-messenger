@@ -10,8 +10,8 @@ return array(
 	),
 	'messenger' => array(
 		'system_user' => array(
-			'email' => 'test-system@test.com',
-			'name' => 'Test System'
+			'display_name' => 'Test System',
+			'email' => 'test-system@test.com'
 		),
 		'view_manager' => array(
 			'template_map' => array(
@@ -19,7 +19,7 @@ return array(
 			)
 		),
 		'transporters' => array(
-			\BoilerAppMessenger\Service\MessengerService::MEDIA_EMAIL => function(){
+			'mail' => function(){
 				$oFileTransport = new \BoilerAppMessenger\Mail\Transport\File(new \Zend\Mail\Transport\FileOptions(array(
 					'path' => __DIR__ . '/_files/mails'
 				)));

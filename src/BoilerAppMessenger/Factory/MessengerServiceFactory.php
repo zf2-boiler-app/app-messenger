@@ -15,6 +15,26 @@ class MessengerServiceFactory implements \Zend\ServiceManager\FactoryInterface{
         $aTemplatingConfig = isset($aConfiguration['messenger']['tree_layout_stack'])?$aConfiguration['messenger']['tree_layout_stack']:array();
         unset($aConfiguration['messenger']['transporters'],$aConfiguration['messenger']['tree_layout_stack']);
 
+        //Define message system user
+        if(isset($aOptions['messenger']['system_user']) && is_array($aOptions['messenger']['system_user'])){
+        	$oMessageUser = new \BoilerAppMessenger\MessageUser();
+
+        	if(isset($aOptions['messenger']['system_user']['display_name'])){
+        		if(is_string($aOptions['messenger']['system_user']['display_name']))$oMessageUser->setUserDisplayName($aOptions['messenger']['system_user']['display_name']);
+        		else throw new \InvalidArgumentException('system user display name expects string, "'.gettype($aOptions['messenger']['system_user']['display_name']).'" given');
+        	}
+        	if(isset($aOptions['messenger']['system_user']['email'])){
+        		if(($sEmail = filter_var($aOptions['messenger']['system_user']['email'],FILTER_VALIDATE_EMAIL)))$oMessageUser->setEmail($sEmail);
+        		else throw new \InvalidArgumentException(sprintf(
+        			'system user email expects valid email adress, "%s" given',
+        			is_scalar($aOptions['messenger']['system_user']['email'])
+        				?$aOptions['messenger']['system_user']['email']
+        				:(is_object($aOptions['messenger']['system_user']['email'])?get_class($aOptions['messenger']['system_user']['email']):gettype($aOptions['messenger']['system_user']['email']))
+        		));
+        	}
+        	$aOptions['messenger']['system_user'] = $oMessageUser;
+        }
+
         $oMessengerService = \BoilerAppMessenger\Service\MessengerService::factory(
         	isset($aConfiguration['messenger'])?$aConfiguration['messenger']:array()
         );
@@ -40,12 +60,7 @@ class MessengerServiceFactory implements \Zend\ServiceManager\FactoryInterface{
         	$oMessengerService->setTransporter($oTransporter, $sMedia);
         }
 
-        //Define services
-        if($oServiceLocator->has('AssetsBundleService'))$oMessengerService->setAssetsBundleService($oServiceLocator->get('AssetsBundleService'));
-        if($oServiceLocator->has('StyleInliner'))$oMessengerService->setStyleInliner($oServiceLocator->get('StyleInliner'));
-        if($oServiceLocator->has('translator'))$oMessengerService->setTranslator($oServiceLocator->get('translator'));
-        if($oServiceLocator->has('router'))$oMessengerService->setRouter($oServiceLocator->get('router'));
-        $oMessengerService->setTemplatingService(\TreeLayoutStack\TemplatingService::factory($aTemplatingConfig));
+
 
         return $oMessengerService;
     }

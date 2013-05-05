@@ -4,7 +4,7 @@ class Message{
 	const SYSTEM_USER = 'system';
 
 	/**
-	 * @var \BoilerAppUser\Entity\UserEntity|string
+	 * @var \BoilerAppMessenger\MessageAwareInterface
 	 */
 	protected $from;
 
@@ -27,19 +27,17 @@ class Message{
 
 	/**
 	 * Set "From" sender
-	 * @param \BoilerAppUser\Entity\UserEntity|string $oFrom
-	 * @throws \InvalidArgumentException
+	 * @param \BoilerAppMessenger\MessageAwareInterface $oFrom
 	 * @return \BoilerAppMessenger\Message
 	 */
-	public function setFrom($oFrom = self::SYSTEM_USER){
-		if($oFrom === self::SYSTEM_USER || $oFrom instanceof \BoilerAppUser\Entity\UserEntity)$this->from = $oFrom;
-		else throw new \InvalidArgumentException('From sender expects \Messenger\Message::SYSTEM_USER or \BoilerAppUser\Entity\UserEntity');
+	public function setFrom(\BoilerAppMessenger\MessageAwareInterface $oFrom){
+		$this->from = $oFrom;
 		return $this;
 	}
 
 	/**
 	 * Retrieve "From" sender
-	 * @return \BoilerAppUser\Entity\UserEntity|string
+	 * @return \BoilerAppMessenger\MessageAwareInterface
 	 */
 	public function getFrom(){
 		return $this->from;
@@ -47,7 +45,7 @@ class Message{
 
 	/**
 	 * Set "To" recipients
-	 * @param \BoilerAppUser\Entity\UserEntity|string|array $aTo
+	 * @param \BoilerAppMessenger\MessageAwareInterface|array $aTo
 	 * @return \BoilerAppMessenger\Message
 	 */
 	public function setTo($aTo){
@@ -57,19 +55,19 @@ class Message{
 
 	/**
 	 * Add one or more recipients to the "To" recipients
-	 * @param \BoilerAppUser\Entity\UserEntity|string|array $aTo
+	 * @param \BoilerAppMessenger\MessageAwareInterface|array $aTo
 	 * @throws \InvalidArgumentException
 	 * @return \BoilerAppMessenger\Message
 	 */
 	public function addTo($aTo){
-		if($aTo === self::SYSTEM_USER || $aTo instanceof \BoilerAppUser\Entity\UserEntity)$aTo = array($aTo);
+		if($aTo instanceof \BoilerAppMessenger\MessageAwareInterface)$aTo = array($aTo);
 		elseif($aTo instanceof \Traversable)$aTo = \Zend\Stdlib\ArrayUtils::iteratorToArray($aTo);
-		elseif(!is_array($aTo))throw new \InvalidArgumentException('To recipients expects \BoilerAppMessenger\Message::SYSTEM_USER, \User\Entity\UserEntity, array or Traversable object');
+		elseif(!is_array($aTo))throw new \InvalidArgumentException('To recipients expects \BoilerAppMessenger\MessageAwareInterface, array or Traversable object');
 		$this->to = array_unique(array_merge(
 			$this->to,
 			array_filter($aTo,function($oTo){
-				if($oTo === self::SYSTEM_USER || $oTo instanceof \BoilerAppUser\Entity\UserEntity)return true;
-				else throw new \InvalidArgumentException('Recipient expects \BoilerAppMessenger\Message::SYSTEM_USER or \BoilerAppUser\Entity\UserEntity');
+				if($oTo instanceof \BoilerAppMessenger\MessageAwareInterface)return true;
+				else throw new \InvalidArgumentException('Recipient expects an instanceof \BoilerAppMessenger\MessageAwareInterface');
 			})
 		));
 		return $this;
