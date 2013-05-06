@@ -28,6 +28,23 @@ class MailMessageRendererFactory implements \Zend\ServiceManager\FactoryInterfac
 		//StyleInliner service
 		if($oServiceLocator->has('StyleInlinerService'))$oMailMessageRenderer->setStyleInlinerService($oServiceLocator->get('StyleInlinerService'));
 
+		//Translator
+		if($oServiceLocator->has('translator')){
+			$oTranslateHelper = new \Zend\I18n\View\Helper\Translate();
+			$oMailMessageRenderer->getHelperPluginManager()->setService(
+				'translate',
+				$oTranslateHelper->setTranslator($oServiceLocator->get('translator'))->setTranslatorEnabled(true)
+			);
+		}
+
+		//Router
+		if($oServiceLocator->has('router')){
+			$oUrlHelper = new \Zend\View\Helper\Url();
+			$oMailMessageRenderer->getHelperPluginManager()->setService(
+				'url',
+				$oUrlHelper->setRouter($oServiceLocator->get('router'))
+			);
+		}
 		return $oMailMessageRenderer;
 	}
 }
