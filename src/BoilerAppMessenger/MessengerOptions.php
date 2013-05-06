@@ -7,22 +7,21 @@ class MessengerOptions extends \Zend\Stdlib\AbstractOptions{
 	protected $systemUser;
 
 	/**
-	 * @param \BoilerAppMessenger\MessageUserInterface $oSystemUser
+	 * @param \BoilerAppMessenger\Message\MessageUserInterface $oSystemUser
 	 * @throws \InvalidArgumentException
 	 * @return \BoilerAppMessenger\MessengerOptions
 	 */
-	public function setSystemUser(\BoilerAppMessenger\MessageUserInterface $oSystemUser){
+	public function setSystemUser(\BoilerAppMessenger\Message\MessageUserInterface $oSystemUser){
 		$this->systemUser = $oSystemUser;
 		return $this;
 	}
 
-
 	/**
 	 * @throws \LogicException
-	 * @return \BoilerAppMessenger\MessageUserInterface
+	 * @return \BoilerAppMessenger\Message\MessageUserInterface
 	 */
 	public function getSystemUser(){
-		if($this->systemUser instanceof \BoilerAppMessenger\MessageUserInterface)return $this->systemUser;
+		if($this->systemUser instanceof \BoilerAppMessenger\Message\MessageUserInterface)return $this->systemUser;
 		throw new \LogicException('System user is undefined');
 	}
 }

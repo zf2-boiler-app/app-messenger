@@ -10,67 +10,65 @@ class MessengerServiceFactoryTest extends \BoilerAppTest\PHPUnit\TestCase\Abstra
 	/**
 	 * @var array
 	 */
-	protected $transportersConfig;
+	protected $originalConfig;
 
 	/**
 	 * @see PHPUnit_Framework_TestCase::setUp()
 	 */
 	protected function setUp(){
+		$this->originalConfig = $this->getServiceManager()->setAllowOverride(true)->get('Config');
 		$this->messengerServiceFactory = new \BoilerAppMessenger\Factory\MessengerServiceFactory();
 	}
 
 	public function testCreateService(){
-		$this->assertInstanceOf('BoilerAppMessenger\Service\MessengerService',$this->messengerServiceFactory->createService($this->getServiceManager()));
+		$this->assertInstanceOf('BoilerAppMessenger\MessengerService',$this->messengerServiceFactory->createService($this->getServiceManager()));
 	}
 
 	/**
 	 * @expectedException LogicException
 	 */
 	public function testCreationTransporterWithUnknownService(){
-		$oServiceManager = $this->getServiceManager();
-
-		$aConfiguration = $oServiceManager->get('Config');
-		$this->transportersConfig = isset($aConfiguration['messenger']['transporters'])?$aConfiguration['messenger']['transporters']:null;
+		$aConfiguration = $this->originalConfig;
 
 		//Override transporters config
-		$aConfiguration['messenger']['transporters'] = array(
-			'test' => 'WrongTransporter'
-		);
-		$oServiceManager->setAllowOverride(true);
-		$oServiceManager->setService('Config', $aConfiguration);
-
-		$this->messengerServiceFactory->createService($oServiceManager);
+		$aConfiguration['messenger']['transporters'] = array('test' => 'WrongTransporter');
+		$this->assertInstanceOf('BoilerAppMessenger\MessengerService',$this->messengerServiceFactory->createService($this->getServiceManager()->setService('Config', $aConfiguration)));
 	}
 
 	/**
 	 * @expectedException LogicException
 	 */
 	public function testCreationTransporterWithWrongArray(){
-		$oServiceManager = $this->getServiceManager();
-
-		$aConfiguration = $oServiceManager->get('Config');
-		$this->transportersConfig = isset($aConfiguration['messenger']['transporters'])?$aConfiguration['messenger']['transporters']:null;
-
+		$aConfiguration = $this->originalConfig;
 		//Override transporters config
-		$aConfiguration['messenger']['transporters'] = array(
-			'test' => array(
-				'type' => 'WrongTransporter'
-			)
-		);
-		$oServiceManager->setAllowOverride(true);
-		$oServiceManager->setService('Config', $aConfiguration);
+		$aConfiguration['messenger']['transporters'] = array('test' => array('type' => 'WrongTransporter'));
+		$this->messengerServiceFactory->createService($this->getServiceManager()->setService('Config', $aConfiguration));
+	}
 
-		$this->messengerServiceFactory->createService($oServiceManager);
+	/**
+	 * @expectedException LogicException
+	 */
+	public function testCreationTransporterWithWrongSystemUserDisplayName(){
+		$aConfiguration = $this->originalConfig;
+
+		//Override system user config
+		$aConfiguration['messenger']['system_user']['display_name'] = array();
+		$this->messengerServiceFactory->createService($this->getServiceManager()->setService('Config', $aConfiguration));
+	}
+
+	/**
+	 * @expectedException LogicException
+	 */
+	public function testCreationTransporterWithWrongSystemUserEmail(){
+		$aConfiguration = $this->originalConfig;
+
+		//Override system user config
+		$aConfiguration['messenger']['system_user']['email'] = 'wrong';
+		$this->messengerServiceFactory->createService($this->getServiceManager()->setService('Config', $aConfiguration));
 	}
 
 	public function tearDown(){
-		//Reset configuration if needed
-		if(isset($this->transportersConfig)){
-			$oServiceManager = $this->getServiceManager();
-			$aConfiguration = $oServiceManager->get('Config');
-			$aConfiguration['messenger']['transporters'] = $this->transportersConfig;
-			$oServiceManager->setService('Config', $aConfiguration);
-			$oServiceManager->setAllowOverride(false);
-		}
+		//Reset configuration
+    	$this->getServiceManager()->setService('Config', $this->originalConfig)->setAllowOverride(false);
 	}
 }

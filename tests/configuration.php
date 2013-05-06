@@ -13,21 +13,31 @@ return array(
 			'display_name' => 'Test System',
 			'email' => 'test-system@test.com'
 		),
-		'view_manager' => array(
-			'template_map' => array(
-				'email/simple-view' => __DIR__ . '/_files/views/simple-view.phtml'
-			)
-		),
 		'transporters' => array(
-			'mail' => function(){
-				$oFileTransport = new \BoilerAppMessenger\Mail\Transport\File(new \Zend\Mail\Transport\FileOptions(array(
-					'path' => __DIR__ . '/_files/mails'
-				)));
-				return $oFileTransport->setBaseDir(__DIR__);
+			'mail' => function($oServiceLocator){
+				$oMailMessageTransporter = new \BoilerAppMessenger\Media\Mail\MailMessageTransporter();
+				return $oMailMessageTransporter
+					->setMessageRenderer($oServiceLocator->get('MailMessageRenderer'))
+					->setBaseDir(__DIR__)
+					->setMailTransporter(new \Zend\Mail\Transport\File(new \Zend\Mail\Transport\FileOptions(array(
+						'path' => __DIR__ . '/_files/mails'
+					))));
 			},
 			'test' => 'TestTransporter',
 			'test1' => array(
 				'type' => 'TestTransporter'
+			)
+		)
+	),
+	'medias' => array(
+		'mail' => array(
+			'mail_transporter' => function(){
+				return new \Zend\Mail\Transport\File(new \Zend\Mail\Transport\FileOptions(array(
+					'path' => __DIR__ . '/_files/mails'
+				)));
+			},
+			'template_map' => array(
+				'email/simple-view' => __DIR__ . '/_files/views/simple-view.phtml'
 			)
 		)
 	),
@@ -40,9 +50,10 @@ return array(
 				return \BoilerAppMessenger\StyleInliner\Processor\CssToInlineStylesProcessor::factory(array('baseDir' => __DIR__.DIRECTORY_SEPARATOR.'_files'));
 			},
 			'TestTransporter' => function(){
-				return new \BoilerAppMessenger\Mail\Transport\File(new \Zend\Mail\Transport\FileOptions(array(
-					'path' => __DIR__ . '/_files/mails'
-				)));
+				return new \BoilerAppMessenger\Media\Mail\MailMessageTransporter();
+			},
+			'TestMailTransporter' => function(){
+				return new \Zend\Mail\Transport\Sendmail();
 			}
 		)
 	)

@@ -2,18 +2,21 @@
 return array(
 	'asset_bundle' => include 'module.config.assets.php',
 	'messenger' => array(
-		'view_manager' => array(
-			'template_map' => array(
-				'email/layout' => __DIR__ . '/../view/email/layout.phtml'
-			)
-		),
 		'transporters' => array(
 			'mail' => 'MailMessageTransporter'
-		),
-		'tree_layout_stack' => array(
-			'layout_tree' => array(
-				'default' => array(
-					'template' => 'email/layout'
+		)
+	),
+	'medias' => array(
+		'mail' => array(
+			'mail_transporter' => 'Zend\Mail\Transport\Sendmail',
+			'template_map' => array(
+				'email/layout' => __DIR__ . '/../view/email/layout.phtml'
+			),
+			'tree_layout_stack' => array(
+				'layout_tree' => array(
+					'default' => array(
+						'template' => 'email/layout'
+					)
 				)
 			)
 		)
@@ -25,7 +28,8 @@ return array(
 		'factories' => array(
 			'MessengerService' => 'BoilerAppMessenger\Factory\MessengerServiceFactory',
 			'MailMessageTransporter' => 'BoilerAppMessenger\Factory\MailMessageTransporterFactory',
-			'StyleInliner' => 'BoilerAppMessenger\Factory\StyleInlinerFactory',
+			'MailMessageRenderer' => 'BoilerAppMessenger\Factory\MailMessageRendererFactory',
+			'StyleInlinerService' => 'BoilerAppMessenger\Factory\StyleInlinerFactory',
 			'InlineStyleProcessor' => 'BoilerAppMessenger\Factory\InlineStyleProcessorFactory',
 			'CssToInlineStylesProcessor' => 'BoilerAppMessenger\Factory\CssToInlineStylesProcessorFactory'
 		)

@@ -7,7 +7,7 @@ class MessengerService{
 	private $options;
 
 	/**
-	 * @var array<\BoilerAppMessenger\MessageTransporterInterface>
+	 * @var array<\BoilerAppMessenger\Message\MessageTransporterInterface>
 	 */
 	private $messageTransporters = array();
 
@@ -27,7 +27,7 @@ class MessengerService{
 	public static function factory($aOptions){
 		if($aOptions instanceof \Traversable)$aOptions = \Zend\Stdlib\ArrayUtils::iteratorToArray($aOptions);
 		elseif(!is_array($aOptions))throw new \InvalidArgumentException(__METHOD__.' expects an array or Traversable object; received "'.(is_object($aOptions)?get_class($aOptions):gettype($aOptions)).'"');
-		return new static(new \BoilerAppMessenger\Service\MessengerOptions($aOptions));
+		return new static(new \BoilerAppMessenger\MessengerOptions($aOptions));
 	}
 
 	/**
@@ -37,7 +37,7 @@ class MessengerService{
 	 * @throws \DomainException
 	 * @return \BoilerAppMessenger\MessengerService
 	 */
-	public function sendMessage(\BoilerAppMessenger\Message $oMessage,$aMedias){
+	public function sendMessage(\BoilerAppMessenger\Message\Message $oMessage,$aMedias){
 		if(empty($aMedias))throw new \InvalidArgumentException('A media must be specified');
 		elseif(is_string($aMedias))$aMedias = array($aMedias);
 		elseif(!is_array($aMedias))throw new \InvalidArgumentException('$aMedias expects an array or a string, "'.gettype($aMedias).'" given');
@@ -49,7 +49,7 @@ class MessengerService{
 	}
 
 	/**
-	 * @return \BoilerAppMessenger\MessageUserInterface
+	 * @return \BoilerAppMessenger\Message\MessageUserInterface
 	 */
 	public function getSystemUser(){
 		return $this->getOptions()->getSystemUser();
@@ -59,7 +59,7 @@ class MessengerService{
 	 * @param \BoilerAppMessenger\MessengerOptions $oOptions
 	 * @return \BoilerAppMessenger\MessengerService
 	 */
-	public function setOptions(\BoilerAppMessenger\Service\MessengerOptions $oOptions){
+	public function setOptions(\BoilerAppMessenger\MessengerOptions $oOptions){
 		$this->options = $oOptions;
 		return $this;
 	}
@@ -69,17 +69,17 @@ class MessengerService{
 	 * @return \BoilerAppMessenger\MessengerOptions
 	 */
 	protected function getOptions(){
-		if($this->options instanceof \BoilerAppMessenger\Service\MessengerOptions)return $this->options;
+		if($this->options instanceof \BoilerAppMessenger\MessengerOptions)return $this->options;
 		throw new \LogicException('Options are undefined');
 	}
 
 	/**
-	 * @param \BoilerAppMessenger\MessageTransporterInterface $oMessageTransporter
+	 * @param \BoilerAppMessenger\Message\MessageTransporterInterface $oMessageTransporter
 	 * @param string $sMedia
 	 * @throws \InvalidArgumentException
-	 * @return \BoilerAppMessenger\Service\MessengerService
+	 * @return \BoilerAppMessenger\MessengerService
 	 */
-	public function setMessageTransporter(\BoilerAppMessenger\MessageTransporterInterface $oMessageTransporter,$sMedia){
+	public function setMessageTransporter(\BoilerAppMessenger\Message\MessageTransporterInterface $oMessageTransporter,$sMedia){
 		if(empty($sMedia) || !is_string($sMedia))throw new \InvalidArgumentException(sprintf(
 			'Media expects string not empty, "%s" given',
 			is_scalar($sMedia)?$sMedia:gettype($sMedia)
@@ -93,14 +93,14 @@ class MessengerService{
 	 * @param string $sMedia
 	 * @throws \InvalidArgumentException
 	 * @throws \LogicException
-	 * @return \BoilerAppMessenger\MessageTransporterInterface
+	 * @return \BoilerAppMessenger\Message\MessageTransporterInterface
 	 */
 	protected function getMessageTransporter($sMedia){
 		if(empty($sMedia) || !is_string($sMedia))throw new \InvalidArgumentException(sprintf(
 			'Media expects string not empty, "%s" given',
 			is_scalar($sMedia)?$sMedia:gettype($sMedia)
 		));
-		if(isset($this->messageTransporters[$sMedia]) && $this->messageTransporters[$sMedia] instanceof \BoilerAppMessenger\MessageTransporterInterface)return $this->messageTransporters[$sMedia];
+		if(isset($this->messageTransporters[$sMedia]) && $this->messageTransporters[$sMedia] instanceof \BoilerAppMessenger\Message\MessageTransporterInterface)return $this->messageTransporters[$sMedia];
 		else throw new \LogicException('Message transporter is not defined for media "'.$sMedia.'"');
 	}
 }

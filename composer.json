@@ -47,13 +47,20 @@
     "require": {
         "php": ">=5.3.3",
         "ext-fileinfo": "*", 
-        "zendframework/zendframework": "2.3.*",
-        "inlinestyle/inlinestyle": "dev-master",
-        "tijsverkoyen/css-to-inline-styles": "dev-master",
-        "zf2-boiler-app/app-user": "1.0.*"
+        "zendframework/zendframework": "2.3.*"          
     },
     "require-dev":{
-    	"zf2-boiler-app/app-test": "1.0.*"
+    	"zf2-boiler-app/app-test": "1.0.*",
+    	"neilime/zf2-tree-layout-stack": "dev-master",
+        "neilime/zf2-assets-bundle": "1.0.*",
+        "inlinestyle/inlinestyle": "dev-master",
+        "tijsverkoyen/css-to-inline-styles": "dev-master"
+    },
+    "suggest": {
+        "neilime/zf2-tree-layout-stack": "Tree layout for email rendering",
+        "neilime/zf2-assets-bundle": "Manage assets for email rendering",
+        "inlinestyle/inlinestyle": "Inlinestyle processor for email rendering",
+        "tijsverkoyen/css-to-inline-styles": "CssToInlineStyles processor for email rendering"
     },
     "autoload": {
         "psr-0": {

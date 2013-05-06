@@ -16,26 +16,26 @@ class MessengerServiceFactory implements \Zend\ServiceManager\FactoryInterface{
         unset($aConfiguration['messenger']['transporters'],$aConfiguration['messenger']['tree_layout_stack']);
 
         //Define message system user
-        if(isset($aOptions['messenger']['system_user']) && is_array($aOptions['messenger']['system_user'])){
-        	$oMessageUser = new \BoilerAppMessenger\MessageUser();
+        if(isset($aConfiguration['messenger']['system_user']) && is_array($aConfiguration['messenger']['system_user'])){
+        	$oMessageUser = new \BoilerAppMessenger\Message\MessageUser();
 
-        	if(isset($aOptions['messenger']['system_user']['display_name'])){
-        		if(is_string($aOptions['messenger']['system_user']['display_name']))$oMessageUser->setUserDisplayName($aOptions['messenger']['system_user']['display_name']);
-        		else throw new \InvalidArgumentException('system user display name expects string, "'.gettype($aOptions['messenger']['system_user']['display_name']).'" given');
+        	if(isset($aConfiguration['messenger']['system_user']['display_name'])){
+        		if(is_string($aConfiguration['messenger']['system_user']['display_name']))$oMessageUser->setUserDisplayName($aConfiguration['messenger']['system_user']['display_name']);
+        		else throw new \InvalidArgumentException('system user display name expects string, "'.gettype($aConfiguration['messenger']['system_user']['display_name']).'" given');
         	}
-        	if(isset($aOptions['messenger']['system_user']['email'])){
-        		if(($sEmail = filter_var($aOptions['messenger']['system_user']['email'],FILTER_VALIDATE_EMAIL)))$oMessageUser->setEmail($sEmail);
+        	if(isset($aConfiguration['messenger']['system_user']['email'])){
+        		if(($sEmail = filter_var($aConfiguration['messenger']['system_user']['email'],FILTER_VALIDATE_EMAIL)))$oMessageUser->setUserEmail($sEmail);
         		else throw new \InvalidArgumentException(sprintf(
         			'system user email expects valid email adress, "%s" given',
-        			is_scalar($aOptions['messenger']['system_user']['email'])
-        				?$aOptions['messenger']['system_user']['email']
-        				:(is_object($aOptions['messenger']['system_user']['email'])?get_class($aOptions['messenger']['system_user']['email']):gettype($aOptions['messenger']['system_user']['email']))
+        			is_scalar($aConfiguration['messenger']['system_user']['email'])
+        				?$aConfiguration['messenger']['system_user']['email']
+        				:(is_object($aConfiguration['messenger']['system_user']['email'])?get_class($aConfiguration['messenger']['system_user']['email']):gettype($aConfiguration['messenger']['system_user']['email']))
         		));
         	}
-        	$aOptions['messenger']['system_user'] = $oMessageUser;
+        	$aConfiguration['messenger']['system_user'] = $oMessageUser;
         }
 
-        $oMessengerService = \BoilerAppMessenger\Service\MessengerService::factory(
+        $oMessengerService = \BoilerAppMessenger\MessengerService::factory(
         	isset($aConfiguration['messenger'])?$aConfiguration['messenger']:array()
         );
 
@@ -57,7 +57,7 @@ class MessengerServiceFactory implements \Zend\ServiceManager\FactoryInterface{
 				elseif($oServiceLocator->has($sTransporterType))$oTransporter = $oServiceLocator->get($sTransporterType);
 				else throw new \LogicException('Transporter "'.$sTransporterType.'" is not an existing service or class');
         	}
-        	$oMessengerService->setTransporter($oTransporter, $sMedia);
+        	$oMessengerService->setMessageTransporter($oTransporter, $sMedia);
         }
 
 

@@ -1,29 +1,30 @@
 <?php
 namespace BoilerAppMessenger\Factory;
 class MailMessageRendererFactory implements \Zend\ServiceManager\FactoryInterface{
+
+	/**
+	 * @see \Zend\ServiceManager\FactoryInterface::createService()
+	 * @param \Zend\ServiceManager\ServiceLocatorInterface $oServiceLocator
+	 * @return \BoilerAppMessenger\Media\Mail\MailMessageRenderer
+	 */
 	public function createService(\Zend\ServiceManager\ServiceLocatorInterface $oServiceLocator){
-		$oMailMessageRenderer = new \BoilerAppMessenger\Mail\MailMessageRenderer();
+		$oMailMessageRenderer = new \BoilerAppMessenger\Media\Mail\MailMessageRenderer();
 
-		//Create layout template
-		$oLayout = new \Zend\View\Model\ViewModel();
-		$oEvent = new \Zend\Mvc\MvcEvent(\Zend\Mvc\MvcEvent::EVENT_RENDER);
-		$this->getTemplatingService()->buildLayoutTemplate($oEvent->setRequest(new \Zend\Http\Request())->setViewModel($oLayout));
+		//Template map
+		$aConfiguration = $oServiceLocator->get('Config');
+		if(isset($aConfiguration['medias']['mail']['template_map']))$oMailMessageRenderer->setTemplateMap($aConfiguration['medias']['mail']['template_map']);
 
-		$oMailMessageRenderer->setResolver(
-			new \Zend\View\Resolver\TemplateMapResolver($this->getOptions()->hasTemplateMap()?$this->getOptions()->getTemplateMap():null)
-		)->plugin('view_model')->setRoot($oEvent->getViewModel());
+		//Templating service
+		if(class_exists('TreeLayoutStack\\TemplatingService'))$oMailMessageRenderer->setTemplatingService(\TreeLayoutStack\TemplatingService::factory(
+	       	isset($aConfiguration['medias']['mail']['tree_layout_stack'])?$aConfiguration['medias']['mail']['tree_layout_stack']:array()
+		));
 
-		//Add mandatory helpers
-		$oTranslateHelper = new \Zend\I18n\View\Helper\Translate();
-		$oMailMessageRenderer->getHelperPluginManager()->setService(
-			'translate',
-			$oTranslateHelper->setTranslator($oServiceLocator->get('translator'))->setTranslatorEnabled(true)
-		);
+		//AssetsBundle service
+		if($oServiceLocator->has('AssetsBundleService'))$oMailMessageRenderer->setAssetsBundleService($oServiceLocator->get('AssetsBundleService'));
 
-		$oUrlHelper = new \Zend\View\Helper\Url();
-		$this->renderers[$sMedia]->getHelperPluginManager()->setService(
-			'url',
-			$oUrlHelper->setRouter($this->getRouter())
-		);
+		//StyleInliner service
+		if($oServiceLocator->has('StyleInlinerService'))$oMailMessageRenderer->setStyleInlinerService($oServiceLocator->get('StyleInlinerService'));
+
+		return $oMailMessageRenderer;
 	}
 }
