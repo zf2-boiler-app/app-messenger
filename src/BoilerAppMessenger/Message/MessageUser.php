@@ -13,7 +13,6 @@ class MessageUser implements \BoilerAppMessenger\Media\Mail\MailMessageUserInter
 	protected $userEmail;
 
 	/**
-	 * @see \BoilerAppMessenger\Message\MessageUserInterface::setUserDisplayName()
 	 * @param string $sUserDisplayName
 	 * @throws \InvalidArgumentException
 	 * @return \BoilerAppMessenger\Message\MessageUser
@@ -33,7 +32,6 @@ class MessageUser implements \BoilerAppMessenger\Media\Mail\MailMessageUserInter
 	}
 
 	/**
-	 * @see \BoilerAppMessenger\Media\Mail\MailMessageUserInterface::setUserEmail()
 	 * @param string $sUserEmail
 	 * @throws \InvalidArgumentException
 	 * @return \BoilerAppMessenger\Message\MessageUser

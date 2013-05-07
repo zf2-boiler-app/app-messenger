@@ -3,11 +3,11 @@ return array(
 	'asset_bundle' => include 'module.config.assets.php',
 	'messenger' => array(
 		'transporters' => array(
-			'mail' => 'MailMessageTransporter'
+			\BoilerAppMessenger\Media\Mail\MailMessageRenderer::MEDIA => 'MailMessageTransporter'
 		)
 	),
 	'medias' => array(
-		'mail' => array(
+		\BoilerAppMessenger\Media\Mail\MailMessageRenderer::MEDIA => array(
 			'mail_transporter' => 'Zend\Mail\Transport\Sendmail',
 			'template_map' => array(
 				'email/layout' => __DIR__ . '/../view/email/layout.phtml'

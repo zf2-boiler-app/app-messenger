@@ -12,12 +12,15 @@ class MailMessageRendererFactory implements \Zend\ServiceManager\FactoryInterfac
 
 		//Template map
 		$aConfiguration = $oServiceLocator->get('Config');
-		if(isset($aConfiguration['medias']['mail']['template_map']))$oMailMessageRenderer->setTemplateMap($aConfiguration['medias']['mail']['template_map']);
+		if(isset($aConfiguration['medias'][\BoilerAppMessenger\Media\Mail\MailMessageRenderer::MEDIA])){
+			$aConfiguration = $aConfiguration['medias'][\BoilerAppMessenger\Media\Mail\MailMessageRenderer::MEDIA];
+			if(isset($aConfiguration['template_map']))$oMailMessageRenderer->setTemplateMap($aConfiguration['template_map']);
 
-		//Templating service
-		if(class_exists('TreeLayoutStack\\TemplatingService'))$oMailMessageRenderer->setTemplatingService(\TreeLayoutStack\TemplatingService::factory(
-	       	isset($aConfiguration['medias']['mail']['tree_layout_stack'])?$aConfiguration['medias']['mail']['tree_layout_stack']:array()
-		));
+			//Templating service
+			if(class_exists('TreeLayoutStack\\TemplatingService'))$oMailMessageRenderer->setTemplatingService(\TreeLayoutStack\TemplatingService::factory(
+		       	isset($aConfiguration['tree_layout_stack'])?$aConfiguration['tree_layout_stack']:array()
+			));
+		}
 
 		//AssetsBundle service
 		if($oServiceLocator->has('AssetsBundleService'))$oMailMessageRenderer->setAssetsBundleService($oServiceLocator->get('AssetsBundleService'));
@@ -25,6 +28,23 @@ class MailMessageRendererFactory implements \Zend\ServiceManager\FactoryInterfac
 		//StyleInliner service
 		if($oServiceLocator->has('StyleInlinerService'))$oMailMessageRenderer->setStyleInlinerService($oServiceLocator->get('StyleInlinerService'));
 
+		//Translator
+		if($oServiceLocator->has('translator')){
+			$oTranslateHelper = new \Zend\I18n\View\Helper\Translate();
+			$oMailMessageRenderer->getHelperPluginManager()->setService(
+				'translate',
+				$oTranslateHelper->setTranslator($oServiceLocator->get('translator'))->setTranslatorEnabled(true)
+			);
+		}
+
+		//Router
+		if($oServiceLocator->has('router')){
+			$oUrlHelper = new \Zend\View\Helper\Url();
+			$oMailMessageRenderer->getHelperPluginManager()->setService(
+				'url',
+				$oUrlHelper->setRouter($oServiceLocator->get('router'))
+			);
+		}
 		return $oMailMessageRenderer;
 	}
 }

@@ -14,7 +14,7 @@ return array(
 			'email' => 'test-system@test.com'
 		),
 		'transporters' => array(
-			'mail' => function($oServiceLocator){
+			\BoilerAppMessenger\Media\Mail\MailMessageRenderer::MEDIA => function($oServiceLocator){
 				$oMailMessageTransporter = new \BoilerAppMessenger\Media\Mail\MailMessageTransporter();
 				return $oMailMessageTransporter
 					->setMessageRenderer($oServiceLocator->get('MailMessageRenderer'))
@@ -30,7 +30,7 @@ return array(
 		)
 	),
 	'medias' => array(
-		'mail' => array(
+		\BoilerAppMessenger\Media\Mail\MailMessageRenderer::MEDIA => array(
 			'mail_transporter' => function(){
 				return new \Zend\Mail\Transport\File(new \Zend\Mail\Transport\FileOptions(array(
 					'path' => __DIR__ . '/_files/mails'
