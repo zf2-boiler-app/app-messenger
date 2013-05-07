@@ -19,36 +19,6 @@ class MailMessageRenderer extends \Zend\View\Renderer\PhpRenderer implements \Bo
 	protected $styleInlinerService;
 
 	/**
-	 * @see \BoilerAppMessenger\Message\MessageRendererInterface::renderMessageBody()
-	 * @param \BoilerAppMessenger\Message\Message $oMessage
-	 * @return string
-	 */
-	public function renderMessageBody(\BoilerAppMessenger\Message\Message $oMessage){
-		//Build layout
-		$this->initLayout();
-
-		$this->layout()->subject = $oMessage->getSubject();
-
-		//Render view
-		$this->layout()->content = $this->render($oMessage->getBody());
-
-		//Manage assets if service is available
-		if($this->hasAssetsBundleService())$this->getAssetsBundleService()
-			->setRenderer($this)
-			->setControllerName(current(explode('\\',__NAMESPACE__)))
-			->setActionName(self::MEDIA)
-			->renderAssets();
-
-		//Render layout
-		$sBody = $this->render($this->layout());
-
-		//Inline style if service is available
-		if($this->hasStyleInlinerService())$sBody = $this->getStyleInlinerService()->processHtml($sBody);
-
-		return $sBody;
-	}
-
-	/**
 	 * Init layout view model
 	 * @return \BoilerAppMessenger\Media\Mail\MailMessageRenderer
 	 */
@@ -62,6 +32,60 @@ class MailMessageRenderer extends \Zend\View\Renderer\PhpRenderer implements \Bo
 		$this->plugin('view_model')->setRoot($oEvent->getViewModel());
 
 		return $this;
+	}
+
+	/**
+	 * @param \Zend\View\Model\ModelInterface $oViewModel
+	 * @throws \DomainException
+	 * @return \BoilerAppMessenger\Media\Mail\MailMessageRenderer
+	 */
+	protected function renderChildren(\Zend\View\Model\ModelInterface $oViewModel){
+        foreach($oViewModel as $oChild){
+            if($oChild->terminate())throw new \DomainException('Inconsistent state; child view model is marked as terminal');
+            $oChild->setOption('has_parent', true);
+            $sResult = $this->renderChildren($oChild)->render($oChild);
+            $oChild->setOption('has_parent', null);
+            $sCapture = $oChild->captureTo();
+            if(!empty($sCapture))$oViewModel->setVariable($sCapture,$oChild->isAppend()?$oViewModel->{$sCapture}.$sResult:$sResult);
+        }
+        return $this;
+    }
+
+	/**
+	 * @see \BoilerAppMessenger\Message\MessageRendererInterface::renderMessageBody()
+	 * @param \BoilerAppMessenger\Message\Message $oMessage
+	 * @return string
+	 */
+	public function renderMessageBody(\BoilerAppMessenger\Message\Message $oMessage){
+		//Build layout
+		$this->initLayout();
+
+		//Retrieve layout
+		$oLayout = $this->layout();
+
+		//Set subject to layout
+		$oLayout->subject = $oMessage->getSubject();
+
+		//Set content to layout
+		$oLayout->content = $this->render($oMessage->getBody());
+
+		//Manage assets if service is available
+		if($this->hasAssetsBundleService())$this->getAssetsBundleService()
+			->setRenderer($this)
+			->setControllerName(current(explode('\\',__NAMESPACE__)))
+			->setActionName(self::MEDIA)
+			->renderAssets();
+
+		//Render children layout if needed
+		if($oLayout->hasChildren())$this->renderChildren($oLayout);
+
+		//Render layout
+		$sBody = $this->render($oLayout);
+
+		//Inline style if service is available
+		if($this->hasStyleInlinerService())$sBody = $this->getStyleInlinerService()->processHtml($sBody);
+
+		return $sBody;
 	}
 
 	/**

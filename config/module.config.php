@@ -10,12 +10,12 @@ return array(
 		\BoilerAppMessenger\Media\Mail\MailMessageRenderer::MEDIA => array(
 			'mail_transporter' => 'Zend\Mail\Transport\Sendmail',
 			'template_map' => array(
-				'email/layout' => __DIR__ . '/../view/email/layout.phtml'
+				'mail/layout' => __DIR__ . '/../view/mail/layout.phtml'
 			),
 			'tree_layout_stack' => array(
 				'layout_tree' => array(
 					'default' => array(
-						'template' => 'email/layout'
+						'template' => 'mail/layout'
 					)
 				)
 			)

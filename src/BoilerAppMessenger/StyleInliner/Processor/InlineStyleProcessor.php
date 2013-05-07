@@ -21,8 +21,8 @@ class InlineStyleProcessor extends \BoilerAppMessenger\StyleInliner\Processor\Ab
 				$oDOMDocument = new \DOMDocument();
 				$oDOMDocument->loadHTML($sHtml);
 				$oDOMXPath = new \DOMXPath($oDOMDocument);
-				foreach($oDOMXPath->query('//*/link[@rel="stylesheet"][contains(@href,\'?\')]/@href') as $oLinkNode){
-					if(strpos($oLinkNode->nodeValue, '://') === false)$oLinkNode->nodeValue = current(explode('?',$oLinkNode->nodeValue));
+				foreach($oDOMXPath->query('//*/link[@rel="stylesheet"][not(contains(@href,\'://\'))][contains(@href,\'?\')]/@href') as $oLinkNode){
+					$oLinkNode->nodeValue = current(explode('?',$oLinkNode->nodeValue));
 				}
 				$sHtml = $oDOMDocument->saveHTML();
 			}

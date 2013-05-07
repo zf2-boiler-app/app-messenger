@@ -47,14 +47,11 @@ class MessengerServiceSendMessageTest extends \BoilerAppTest\PHPUnit\TestCase\Ab
 		$oBody = new \Zend\View\Model\ViewModel(array('testValue' => 'test body <img src="_files/images/test.gif"/>'));
 		$this->message
 			->setSubject('Test subject')
-			->setBody($oBody->setTemplate('email/simple-view'))
+			->setBody($oBody->setTemplate('mail/simple-view'))
 			->addAttachment(getcwd().'/tests/_files/attachments/attachment-test.txt');
-
 	}
 
 	public function testSendMessageFromUserToSystem(){
-		$sMailDir = getcwd().'/tests/_files/mails';
-
 		//"From" user
 		$oFromUser = new \BoilerAppMessenger\Message\MessageUser();
 		$oFromUser->setUserDisplayName('Test "From" User')->setUserEmail('test-from-user@test.com');
@@ -65,29 +62,11 @@ class MessengerServiceSendMessageTest extends \BoilerAppTest\PHPUnit\TestCase\Ab
 		//Send message
 		$this->assertEquals($this->messengerService,$this->messengerService->sendMessage($this->message,'mail'));
 
-		$sMailContent = preg_replace(
-			array('/(Date:[\S|\s]*)(From:)/','/(Content-ID: <)[a-f0-9]*(>)/','/(src="cid:)[a-f0-9]*(")/'),
-			array('$2','$1content-id$2','$1image-id$2'),
-			file_get_contents($sMailDir.DIRECTORY_SEPARATOR.current(array_diff(scandir($sMailDir), array('..', '.','.gitignore'))))
-		);
-
-		//Retrieve boundary
-		$this->assertEquals(1,preg_match('/boundary="=_([a-f0-9]*)"/', $sMailContent,$aMatches));
-		$this->assertArrayHasKey(1, $aMatches);
-
-		//Replace boundary by static word
-		$sMailContent = str_ireplace($aMatches[1],'boundary',$sMailContent);
-
 		//Test mail content
-		$this->assertEquals(
-			file_get_contents(getcwd().'/tests/_files/expected/mails/test-send-message-user-to-system'),
-			$sMailContent
-		);
+		$this->assertMessageContent('test-send-message-user-to-system');
 	}
 
 	public function testSendMessageFromUserToUser(){
-		$sMailDir = getcwd().'/tests/_files/mails';
-
 		//"From" user
 		$oFromUser = new \BoilerAppMessenger\Message\MessageUser();
 		$oFromUser->setUserDisplayName('Test "From" User')->setUserEmail('test-from-user@test.com');
@@ -105,30 +84,12 @@ class MessengerServiceSendMessageTest extends \BoilerAppTest\PHPUnit\TestCase\Ab
 			'mail'
 		));
 
-		$sMailContent = preg_replace(
-			array('/(Date:[\S|\s]*)(From:)/','/(Content-ID: <)[a-f0-9]*(>)/','/(src="cid:)[a-f0-9]*(")/'),
-			array('$2','$1content-id$2','$1image-id$2'),
-			file_get_contents($sMailDir.DIRECTORY_SEPARATOR.current(array_diff(scandir($sMailDir), array('..', '.','.gitignore'))))
-		);
-
-		//Retreive boundary
-		$this->assertEquals(1,preg_match('/boundary="=_([a-f0-9]*)"/', $sMailContent,$aMatches));
-		$this->assertArrayHasKey(1, $aMatches);
-
-		//Replace boundary by static word
-		$sMailContent = str_ireplace($aMatches[1],'boundary',$sMailContent);
-
 		//Test mail content
-		$this->assertEquals(
-			file_get_contents(getcwd().'/tests/_files/expected/mails/test-send-message-user-to-user'),
-			$sMailContent
-		);
+		$this->assertMessageContent('test-send-message-user-to-user');
 	}
 
 
 	public function testSendMessageFromSystemToUser(){
-		$sMailDir = getcwd().'/tests/_files/mails';
-
 		//Send to user
 		$oToUser = new \BoilerAppMessenger\Message\MessageUser();
 		$oToUser->setUserDisplayName('Test "To" User')->setUserEmail('test-user@test.com');
@@ -142,29 +103,11 @@ class MessengerServiceSendMessageTest extends \BoilerAppTest\PHPUnit\TestCase\Ab
 			'mail'
 		));
 
-		$sMailContent = preg_replace(
-			array('/(Date:[\S|\s]*)(From:)/','/(Content-ID: <)[a-f0-9]*(>)/','/(src="cid:)[a-f0-9]*(")/'),
-			array('$2','$1content-id$2','$1image-id$2'),
-			file_get_contents($sMailDir.DIRECTORY_SEPARATOR.current(array_diff(scandir($sMailDir), array('..', '.','.gitignore'))))
-		);
-
-		//Retreive boundary
-		$this->assertEquals(1,preg_match('/boundary="=_([a-f0-9]*)"/', $sMailContent,$aMatches));
-		$this->assertArrayHasKey(1, $aMatches);
-
-		//Replace boundary by static word
-		$sMailContent = str_ireplace($aMatches[1],'boundary',$sMailContent);
-
 		//Test mail content
-		$this->assertEquals(
-			file_get_contents(getcwd().'/tests/_files/expected/mails/test-send-message-system-to-user'),
-			$sMailContent
-		);
+		$this->assertMessageContent('test-send-message-system-to-user');
 	}
 
 	public function testSendMessageFromSystemToSystem(){
-		$sMailDir = getcwd().'/tests/_files/mails';
-
 		//Set from "System" to "System"
 		$this->message->setFrom($this->messengerService->getSystemUser())->setTo($this->messengerService->getSystemUser());
 
@@ -174,24 +117,8 @@ class MessengerServiceSendMessageTest extends \BoilerAppTest\PHPUnit\TestCase\Ab
 			'mail'
 		));
 
-		$sMailContent = preg_replace(
-			array('/(Date:[\S|\s]*)(From:)/','/(Content-ID: <)[a-f0-9]*(>)/','/(src="cid:)[a-f0-9]*(")/'),
-			array('$2','$1content-id$2','$1image-id$2'),
-			file_get_contents($sMailDir.DIRECTORY_SEPARATOR.current(array_diff(scandir($sMailDir), array('..', '.','.gitignore'))))
-		);
-
-		//Retreive boundary
-		$this->assertEquals(1,preg_match('/boundary="=_([a-f0-9]*)"/', $sMailContent,$aMatches));
-		$this->assertArrayHasKey(1, $aMatches);
-
-		//Replace boundary by static word
-		$sMailContent = str_ireplace($aMatches[1],'boundary',$sMailContent);
-
 		//Test mail content
-		$this->assertEquals(
-			file_get_contents(getcwd().'/tests/_files/expected/mails/test-send-message-system-to-system'),
-			$sMailContent
-		);
+		$this->assertMessageContent('test-send-message-system-to-system');
 	}
 
 	/**
@@ -206,5 +133,32 @@ class MessengerServiceSendMessageTest extends \BoilerAppTest\PHPUnit\TestCase\Ab
 	 */
 	public function testSendMessageWithUnknownMedia(){
 		$this->messengerService->sendMessage(new \BoilerAppMessenger\Message\Message(),'wrong');
+	}
+
+	/**
+	 * Test message content
+	 * @param string $sExpectedFile
+	 */
+	public function assertMessageContent($sExpectedFile){
+		$sMailDir = getcwd().'/tests/_files/mails';
+
+		$sMailContent = preg_replace(
+			array('/(Date:[\S|\s]*)(From:)/','/(Content-ID: <)[a-f0-9]*(>)/','/(src="cid:)[a-f0-9]*(")/'),
+			array('$2','$1content-id$2','$1image-id$2'),
+			file_get_contents($sMailDir.DIRECTORY_SEPARATOR.current(array_diff(scandir($sMailDir), array('..', '.','.gitignore'))))
+		);
+
+		//Retreive boundary
+		$this->assertEquals(1,preg_match('/boundary="=_([a-f0-9]*)"/', $sMailContent,$aMatches));
+		$this->assertArrayHasKey(1, $aMatches);
+
+		//Replace boundary by static word
+		$sMailContent = str_ireplace($aMatches[1],'boundary',$sMailContent);
+
+		//Test mail content
+		$this->assertEquals(
+			file_get_contents(getcwd().'/tests/_files/expected/mails/'.$sExpectedFile),
+			$sMailContent
+		);
 	}
 }

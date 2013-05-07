@@ -13,7 +13,7 @@ class MessageTest extends \BoilerAppTest\PHPUnit\TestCase\AbstractTestCase{
 		parent::setUp();
 		$this->message = new \BoilerAppMessenger\Message\Message();
 		$oBody = new \Zend\View\Model\ViewModel(array('testValue' => 'Test body'));
-		$this->message->setSubject('Test subject')->setBody($oBody->setTemplate('email/simple-view'));
+		$this->message->setSubject('Test subject')->setBody($oBody->setTemplate('mail/simple-view'));
 	}
 
 	public function testAddAttachment(){

@@ -37,7 +37,19 @@ return array(
 				)));
 			},
 			'template_map' => array(
-				'email/simple-view' => __DIR__ . '/_files/views/simple-view.phtml'
+				'mail/layout' => __DIR__ . '/_files/views/layout.phtml',
+				'mail/header' => __DIR__ . '/_files/views/header.phtml',
+				'mail/simple-view' => __DIR__ . '/_files/views/simple-view.phtml'
+			),
+			'tree_layout_stack' => array(
+				'layout_tree' => array(
+					'default' => array(
+						'template' => 'mail/layout',
+						'children' => array(
+							'header' => 'mail/header'
+						)
+					)
+				)
 			)
 		)
 	),
