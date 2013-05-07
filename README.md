@@ -83,8 +83,7 @@ Installation
     return array(
         'modules' => array(
             // ...
-            'AssetsBundle',
-            'BoilerAppMessenger',
+            'BoilerAppMessenger'
         ),
         // ...
     );
@@ -99,8 +98,11 @@ Installation
 	- ...
 
 ####Email
-- Assets management ([AssetsBundle](https://github.com/neilime/zf2-assets-bundle))
-- Inline style processing ([InlineStyle](https://github.com/christiaan/InlineStyle))
 - Tree layout stack ([TreeLayoutStack](https://github.com/neilime/zf2-tree-layout-stack))
-- Supports attachments
-- Auto attach inline images
+- Assets management ([AssetsBundle](https://github.com/neilime/zf2-assets-bundle)) :
+
+Just add `AssetsBundle` in your `application.config.php` file to enable it.
+
+- Inline style processing ([CssToInlineStyles](https://github.com/tijsverkoyen/CssToInlineStyles) [InlineStyle](https://github.com/christiaan/InlineStyle))
+- Manage attachments
+- Manage inline images as "inline attachments"

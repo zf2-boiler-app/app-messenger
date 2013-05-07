@@ -17,7 +17,7 @@ class MailMessageRendererFactory implements \Zend\ServiceManager\FactoryInterfac
 			if(isset($aConfiguration['template_map']))$oMailMessageRenderer->setTemplateMap($aConfiguration['template_map']);
 
 			//Templating service
-			if(class_exists('TreeLayoutStack\\TemplatingService'))$oMailMessageRenderer->setTemplatingService(\TreeLayoutStack\TemplatingService::factory(
+			if(class_exists('TreeLayoutStack\TemplatingService'))$oMailMessageRenderer->setTemplatingService(\TreeLayoutStack\TemplatingService::factory(
 		       	isset($aConfiguration['tree_layout_stack'])?$aConfiguration['tree_layout_stack']:array()
 			));
 		}

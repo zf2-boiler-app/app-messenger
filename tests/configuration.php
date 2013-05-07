@@ -55,6 +55,9 @@ return array(
 			'TestMailTransporter' => function(){
 				return new \Zend\Mail\Transport\Sendmail();
 			}
+		),
+		'aliases' => array(
+			'translator' => 'mvctranslator'
 		)
 	)
 );
