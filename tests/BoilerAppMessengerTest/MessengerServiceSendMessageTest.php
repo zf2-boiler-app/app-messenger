@@ -156,9 +156,9 @@ class MessengerServiceSendMessageTest extends \BoilerAppTest\PHPUnit\TestCase\Ab
 		$sMailContent = str_ireplace($aMatches[1],'boundary',$sMailContent);
 
 		//Test mail content
-		$this->assertEquals(
-			file_get_contents(getcwd().'/tests/_files/expected/mails/'.$sExpectedFile),
-			$sMailContent
+		$this->assertStringEqualsFile(
+			getcwd().'/tests/_files/expected/mails/'.$sExpectedFile,
+			str_replace(PHP_EOL,"\n",$sMailContent)
 		);
 	}
 }
