@@ -2,8 +2,7 @@ ZF2 BoilerApp "Messenger" module
 =====================
 
 [![Build Status](https://travis-ci.org/zf2-boiler-app/app-messenger.png?branch=master)](https://travis-ci.org/zf2-boiler-app/app-messenger)
-
-_100% Code Coverage_
+![Code coverage](https://raw.github.com/zf2-boiler-app/app-test/master/ressources/100%25-code-coverage.png "100% code coverage")
 
 NOTE : This module is in heavy development, it's not usable yet.
 If you want to contribute don't hesitate, I'll review any PR.
