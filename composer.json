@@ -47,13 +47,13 @@
     "require": {
         "php": ">=5.3.3",
         "ext-fileinfo": "*", 
-        "zendframework/zendframework": "2.3.*",
+        "zendframework/zendframework": "dev-master",
         "tijsverkoyen/css-to-inline-styles": "dev-master"         
     },
     "require-dev":{
-    	"zf2-boiler-app/app-test": "1.0.*",
+    	"zf2-boiler-app/app-test": "dev-master",
     	"neilime/zf2-tree-layout-stack": "dev-master",
-        "neilime/zf2-assets-bundle": "1.0.*",
+        "neilime/zf2-assets-bundle": "dev-master",
         "inlinestyle/inlinestyle": "dev-master"        
     },
     "suggest": {
