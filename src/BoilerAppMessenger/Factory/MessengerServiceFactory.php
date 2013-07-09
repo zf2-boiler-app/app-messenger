@@ -12,8 +12,7 @@ class MessengerServiceFactory implements \Zend\ServiceManager\FactoryInterface{
         $aConfiguration = $oServiceLocator->get('Config');
 
         $aTransporters = isset($aConfiguration['messenger']['transporters']) && is_array($aConfiguration['messenger']['transporters'])?$aConfiguration['messenger']['transporters']:array();
-        $aTemplatingConfig = isset($aConfiguration['messenger']['tree_layout_stack'])?$aConfiguration['messenger']['tree_layout_stack']:array();
-        unset($aConfiguration['messenger']['transporters'],$aConfiguration['messenger']['tree_layout_stack']);
+        unset($aConfiguration['messenger']['transporters']);
 
         //Define message system user
         if(isset($aConfiguration['messenger']['system_user']) && is_array($aConfiguration['messenger']['system_user'])){
@@ -59,9 +58,6 @@ class MessengerServiceFactory implements \Zend\ServiceManager\FactoryInterface{
         	}
         	$oMessengerService->setMessageTransporter($oTransporter, $sMedia);
         }
-
-
-
         return $oMessengerService;
     }
 }

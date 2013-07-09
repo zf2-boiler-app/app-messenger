@@ -121,6 +121,33 @@ class MessengerServiceSendMessageTest extends \BoilerAppTest\PHPUnit\TestCase\Ab
 		$this->assertMessageContent('test-send-message-system-to-system');
 	}
 
+	public function testSendMessageWithDefaultLayoutTemplate(){
+
+		$oServiceManager = $this->getServiceManager()->setAllowOverride(true);
+		$aConfiguration = $oServiceManager->get('config');
+		$aConfiguration['medias'][\BoilerAppMessenger\Media\Mail\MailMessageRenderer::MEDIA]['template_map']['mail/layout'] = getcwd().'/view/mail/layout.phtml';
+		$oServiceManager->setService('config', $aConfiguration);
+
+		$oMailMessageRendererFactory = new \BoilerAppMessenger\Factory\MailMessageRendererFactory();
+		$oServiceManager->setService('MailMessageRenderer',$oMailMessageRendererFactory->createService($oServiceManager))->setAllowOverride(false);
+
+
+		$oMessengerServiceFactory = new \BoilerAppMessenger\Factory\MessengerServiceFactory();
+		$this->messengerService = $oMessengerServiceFactory->createService($oServiceManager);
+
+		//Set from "System" to "System"
+		$this->message->setFrom($this->messengerService->getSystemUser())->setTo($this->messengerService->getSystemUser());
+
+		//Send message
+		$this->assertEquals($this->messengerService,$this->messengerService->sendMessage(
+			$this->message,
+			'mail'
+		));
+
+		//Test mail content
+		$this->assertMessageContent('test-send-message-with-default-layout-template');
+	}
+
 	/**
 	 * @expectedException InvalidArgumentException
 	 */

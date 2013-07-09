@@ -16,10 +16,6 @@
     "minimum-stability" : "dev",
     "repositories":[        
         {
-	        "type": "vcs",
-	        "url": "http://github.com/Nodge/lessphp"
-	    },
-        {
             "type": "package",
             "package": {
                 "version": "dev-master",
@@ -45,7 +41,7 @@
         }
     ],
     "require": {
-        "php": ">=5.3.3",
+        "php": ">=5.4",
         "ext-fileinfo": "*", 
         "zendframework/zendframework": "dev-master",
         "tijsverkoyen/css-to-inline-styles": "dev-master"         
