@@ -2,6 +2,8 @@ ZF2 BoilerApp "Messenger" module
 =====================
 
 [![Build Status](https://travis-ci.org/zf2-boiler-app/app-messenger.png?branch=master)](https://travis-ci.org/zf2-boiler-app/app-messenger)
+[![Latest Stable Version](https://poser.pugx.org/zf2-boiler-app/app-messenger/v/stable.png)](https://packagist.org/packages/zf2-boiler-app/app-messenger)
+[![Total Downloads](https://poser.pugx.org/zf2-boiler-app/app-messenger/downloads.png)](https://packagist.org/packages/zf2-boiler-app/app-messenger)
 ![Code coverage](https://raw.github.com/zf2-boiler-app/app-test/master/ressources/100%25-code-coverage.png "100% code coverage")
 
 NOTE : This module is in heavy development, it's not usable yet.
