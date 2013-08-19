@@ -70,11 +70,14 @@ class MailMessageRenderer extends \Zend\View\Renderer\PhpRenderer implements \Bo
 		$oLayout->content = $this->render($oMessage->getBody());
 
 		//Manage assets if service is available
-		if($this->hasAssetsBundleService())$this->getAssetsBundleService()
-			->setRenderer($this)
-			->setControllerName(current(explode('\\',__NAMESPACE__)))
-			->setActionName(self::MEDIA)
-			->renderAssets();
+		if($this->hasAssetsBundleService()){
+			$this->getAssetsBundleService()->getOptions()
+			->setModuleName(current(explode('\\',__NAMESPACE__)))
+			->setControllerName(self::MEDIA)
+			->setRenderer($this);
+
+			$this->getAssetsBundleService()->renderAssets();
+		}
 
 		//Render children layout if needed
 		if($oLayout->hasChildren())$this->renderChildren($oLayout);

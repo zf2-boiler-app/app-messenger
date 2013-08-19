@@ -8,6 +8,6 @@ return array(
 		)
 	),
 	'rendererToStrategy' => array(
-		'BoilerAppMessenger\Media\Mail\MailMessageRenderer'  => '\AssetsBundle\View\Strategy\ViewHelperStrategy'
+		'boilerappmessengermediamailmailmessagerenderer'  => '\AssetsBundle\View\Strategy\ViewHelperStrategy'
 	)
 );
